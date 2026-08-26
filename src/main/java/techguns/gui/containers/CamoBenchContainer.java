@@ -9,6 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
 import techguns.api.tginventory.TGSlotType;
 import techguns.capabilities.TGExtendedPlayer;
 import techguns.gui.player.TGPlayerInventory;
@@ -52,7 +53,7 @@ public class CamoBenchContainer extends OwnedTileContainer {
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int slotid) {
+    public @NotNull ItemStack transferStackInSlot(@NotNull EntityPlayer player, int slotid) {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(slotid);
 
@@ -63,39 +64,24 @@ public class CamoBenchContainer extends OwnedTileContainer {
 
                 //camoslot pressed
                 if (slotid == 0) {
-					/*if ((((Slot) this.inventorySlots.get(0)).getStack())==null){
-						//nothing to do here
-					} else {*/
+                    boolean moved = false;
                     if (stack1.getItem() instanceof ItemArmor) {
                         int type = getArmorIntFromEntityEquipmentSlot(((ItemArmor) stack1.getItem()).armorType);
                         //put armor back in player armor inventory
-                        if (!this.mergeItemStack(stack1, 37 + type, 37 + type + 1, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                        slot.onSlotChange(stack1, stack);
-                    } else {
-                        //put item back in player inventory
-                        if (!this.mergeItemStack(stack1, 1, 37, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                        slot.onSlotChange(stack1, stack);
+                        moved = this.mergeItemStack(stack1, 37 + type, 37 + type + 1, false);
                     }
-                    //}
-                } else if (slotid >= 1) {
-                    //pressed in player gui
-                    if (!(this.inventorySlots.get(0).getStack()).isEmpty()) {
-                        //System.out.println("Try put in slot 0");
-                        if (!this.mergeItemStack(stack1, 0, 1, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                        slot.onSlotChange(stack1, stack);
-                    } else {
-                        //System.out.println("SLOT 0 FULL");
+                    if (!moved && !this.mergeItemStack(stack1, 1, 37, true)) {
                         return ItemStack.EMPTY;
                     }
+                    slot.onSlotChange(stack1, stack);
+                } else {
+                    if (!this.mergeItemStack(stack1, 0, 1, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                    slot.onSlotChange(stack1, stack);
                 }
 
-                if (stack1.getCount() == 0) {
+                if (stack1.isEmpty()) {
                     slot.putStack(ItemStack.EMPTY);
                 } else {
                     slot.onSlotChanged();

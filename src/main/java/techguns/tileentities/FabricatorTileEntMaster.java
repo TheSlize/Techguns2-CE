@@ -93,6 +93,24 @@ public class FabricatorTileEntMaster extends MultiBlockMachineTileEntMaster impl
     }
 
     @Override
+    public void writeClientDataToNBT(NBTTagCompound tags) {
+        super.writeClientDataToNBT(tags);
+        if (this.currentRecipe != null) {
+            tags.setString("currentRecipe", this.currentRecipe.recName);
+        }
+    }
+
+    @Override
+    public void readClientDataFromNBT(NBTTagCompound tags) {
+        super.readClientDataFromNBT(tags);
+        if (tags.hasKey("currentRecipe")) {
+            this.currentRecipe = FabricatorRecipe.searchRecByName(tags.getString("currentRecipe"));
+        } else {
+            this.currentRecipe = null;
+        }
+    }
+
+    @Override
     public ITextComponent getDisplayName() {
         return new TextComponentTranslation(Tags.MOD_ID + ".container.fabricator");
     }
@@ -182,6 +200,9 @@ public class FabricatorTileEntMaster extends MultiBlockMachineTileEntMaster impl
             if (index == 0) {
                 this.currentRecipe = FabricatorRecipe.searchRecByName(selection);
                 this.markChanged();
+                if (!this.world.isRemote) {
+                    this.needUpdate();
+                }
             }
         }
     }

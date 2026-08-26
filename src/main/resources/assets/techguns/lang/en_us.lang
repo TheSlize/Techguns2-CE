@@ -1209,3 +1209,12 @@ config.techguns.ore_drills.powermult_nether_crystal=Nether Crystal Power Multipl
 config.techguns.ore_drills.powermult_nether_crystal.tooltip=Power Multiplier for nether crystal ore clusters
 config.techguns.ore_drills.powermult_oil=Oil Power Multiplier
 config.techguns.ore_drills.powermult_oil.tooltip=Power Multiplier for oil clusters
+config.techguns.spawner_block=§e§lSpawner block
+config.techguns.spawner_block.spawnerBlockUseCustomEntitySpawn=Use custom entity spawn
+config.techguns.spawner_block.spawnerBlockUseCustomEntitySpawn.tooltip=false = default TG mode (spawns only ITGSpawnerNPC mobs from presets). true = custom mode (spawns any EntityLiving from this spawner's mobtypes NBT id; use this when editing spawner NBT to point at entities from other mods).
+config.techguns.srpIntegration=§4§lSRParasites Integration
+config.techguns.srpIntegration.tooltip=Options for those using Techguns with the Scape & Run: Parasites mod (or other mods with hard monsters)
+config.techguns.srpIntegration.rebalance_nucleardeathray=Rebalance Nuclear Death Ray
+config.techguns.srpIntegration.rebalance_nucleardeathray.tooltip=Increase the Nuclear Death Ray's damage to make it the only weapon against the parasites. false = default NDR damage
+config.techguns.srpIntegration.rebalance_tfg=Rebalance BFG-10K
+config.techguns.srpIntegration.rebalance_tfg.tooltip=Increase the BFG-10K's damage to make it more deadly for parasites. false = default BFG damage

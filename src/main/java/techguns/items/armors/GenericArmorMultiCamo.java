@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import techguns.*;
@@ -25,6 +26,7 @@ public class GenericArmorMultiCamo extends GenericArmor implements ICamoChangeab
     protected static Random rnd = new Random();
     protected String[] textureNames;
     protected String camoNameSuffix = "";
+    protected ResourceLocation[] camoItemTextures = null;
 
 
     public GenericArmorMultiCamo(String unlocalizedName, TGArmorMaterial material, String[] textureNames, EntityEquipmentSlot type) {
@@ -78,11 +80,11 @@ public class GenericArmorMultiCamo extends GenericArmor implements ICamoChangeab
     @Override
     public String getCurrentCamoName(ItemStack item) {
         NBTTagCompound tags = item.getTagCompound();
-        byte camoID = -1;
+        byte camoID = 0;
         if (tags != null && tags.hasKey("camo")) {
             camoID = tags.getByte("camo");
         }
-        if (camoID >= 0) {
+        if (camoID >= 0 && camoID < this.getCamoCount()) {
             return TextUtil.trans(this.modid + ".item." + textureNames[0] + "." + camoNameSuffix + "camoname." + camoID);
         } else {
             return TextUtil.trans(Tags.MOD_ID + ".item.invalidcamo");
@@ -99,24 +101,30 @@ public class GenericArmorMultiCamo extends GenericArmor implements ICamoChangeab
 
     public static ItemStack getNewWithCamo(Item item, int camo) {
         ItemStack armor = new ItemStack(item);
-        NBTTagCompound tags = armor.getTagCompound();
-        if (tags == null) {
-            tags = new NBTTagCompound();
-            armor.setTagCompound(tags);
+        if (camo != 0) {
+            NBTTagCompound tags = armor.getTagCompound();
+            if (tags == null) {
+                tags = new NBTTagCompound();
+                armor.setTagCompound(tags);
+            }
+            tags.setByte("camo", (byte) camo);
         }
-        tags.setByte("camo", (byte) camo);
         return armor;
     }
 
-    @Override
-    public void onCreated(@NotNull ItemStack stack, @NotNull World world, @NotNull EntityPlayer player) {
-        super.onCreated(stack, world, player);
-        NBTTagCompound tags = stack.getTagCompound();
-        if (tags == null) {
-            tags = new NBTTagCompound();
-            stack.setTagCompound(tags);
+    public ResourceLocation getCamoItemTexture(ItemStack stack) {
+        int i = this.getCurrentCamoIndex(stack);
+        if (i < 0 || i >= this.textureNames.length) {
+            i = 0;
         }
-        tags.setByte("camo", (byte) 0);
+        if (this.camoItemTextures == null) {
+            this.camoItemTextures = new ResourceLocation[this.textureNames.length];
+        }
+        if (this.camoItemTextures[i] == null) {
+            this.camoItemTextures[i] = new ResourceLocation(this.modid, "textures/models/armor/" + this.textureNames[i]
+                    + (this.hasDoubleTexture() ? "_layer_1" : "") + ".png");
+        }
+        return this.camoItemTextures[i];
     }
 
 

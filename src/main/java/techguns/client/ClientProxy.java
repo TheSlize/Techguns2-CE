@@ -938,13 +938,13 @@ public class ClientProxy extends CommonProxy {
 				}).setMuzzleFXPos3P(0.14f, -0.82f));
 		
 		ItemRenderHack.registerItemRenderer(TGuns.nucleardeathray,new RenderGunBase90(new ModelNDR(),1).setBaseTranslation(1f, -0.2f, RenderItemBase.SCALE*1.5f-0.09f)
-				.setBaseScale(1.2f).setGUIScale(0.40f).setMuzzleFx(ScreenEffect.muzzleFlashNukeBeam, 0, 0.19f, -0.91f, 0.65f,0).setTransformTranslations(new float[][]{
-					{0f,0.02f,0.09f}, //First Person
-					{-0.01f,0.04f,0.3f}, //Third Person
-					{0.11f,-0.08f,0f}, //GUI
+				.setBaseScale(1.2f).setGUIScale(0.32f).setMuzzleFx(ScreenEffect.muzzleFlashNukeBeam, 0f, 0.19f, -1.4f, 0.65f, 0f).setTransformTranslations(new float[][]{
+					{0.1f,0.02f,-0.05f}, //First Person
+					{-0.01f,0.04f,0.25f}, //Third Person
+					{0.11f,-0.08f,0.1f}, //GUI
 					{0f,0f,0.15f}, //Ground
 					{-0.23f,-0.08f,-0.05f} //frame
-				}).setMuzzleFXPos3P(0.11f, -0.83f).setRecoilAnim(GunAnimation.swayRecoil, 0.025f, 0.75f));
+				}).setMuzzleFXPos3P(0.15f, -0.77f).setRecoilAnim(GunAnimation.swayRecoil, 0.025f, 0.75f));
 		
 		ItemRenderHack.registerItemRenderer(TGuns.scar,new RenderGunBase(new ModelScar(),2).setBaseTranslation(RenderItemBase.SCALE*0.5f, -0.1f, 0.1f)
 				.setGUIScale(0.35f).setMuzzleFx(ScreenEffect.muzzleFlash_rifle, 0, 0.23f, -1.48f, 0.78f,0).setRecoilAnim(GunAnimation.genericRecoil, 0.1f, 4.0f).setTransformTranslations(new float[][]{

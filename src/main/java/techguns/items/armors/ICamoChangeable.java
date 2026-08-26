@@ -11,17 +11,17 @@ public interface ICamoChangeable {
     }
 
     default void switchCamo(ItemStack item, boolean back) {
-        NBTTagCompound tags = item.getTagCompound();
-        if (tags == null) {
-            tags = new NBTTagCompound();
-            item.setTagCompound(tags);
-        }
-        byte camoID = 0;
-        if (tags.hasKey("camo")) {
-            camoID = tags.getByte("camo");
+        ICamoChangeable it = (ICamoChangeable) item.getItem();
+        int count = it.getCamoCount();
+        if (count <= 0) {
+            return;
         }
 
-        ICamoChangeable it = (ICamoChangeable) item.getItem();
+        NBTTagCompound tags = item.getTagCompound();
+        byte camoID = 0;
+        if (tags != null && tags.hasKey("camo")) {
+            camoID = tags.getByte("camo");
+        }
 
         if (back) {
             camoID--;
@@ -29,13 +29,26 @@ public interface ICamoChangeable {
             camoID++;
         }
 
-        if (camoID >= it.getCamoCount()) {
+        if (camoID >= count) {
             camoID = 0;
         } else if (camoID < 0) {
-            camoID = (byte) (it.getCamoCount() - 1);
+            camoID = (byte) (count - 1);
         }
 
-        tags.setByte("camo", camoID);
+        if (camoID == 0) {
+            if (tags != null) {
+                tags.removeTag("camo");
+                if (tags.isEmpty()) {
+                    item.setTagCompound(null);
+                }
+            }
+        } else {
+            if (tags == null) {
+                tags = new NBTTagCompound();
+                item.setTagCompound(tags);
+            }
+            tags.setByte("camo", camoID);
+        }
     }
 
     default int getCurrentCamoIndex(ItemStack item) {

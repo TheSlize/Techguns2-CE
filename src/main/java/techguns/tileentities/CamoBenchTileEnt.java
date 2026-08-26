@@ -8,12 +8,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketSetSlot;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.jetbrains.annotations.NotNull;
 import techguns.*;
 import techguns.capabilities.TGExtendedPlayer;
 import techguns.gui.player.TGPlayerInventory;
 import techguns.items.armors.ICamoChangeable;
 import techguns.tileentities.operation.CamoBenchRecipes;
 import techguns.tileentities.operation.CamoBenchRecipes.CamoBenchRecipe;
+import techguns.tileentities.operation.ItemStackHandlerPlus;
 
 import static techguns.gui.ButtonConstants.BUTTON_ID_SECURITY;
 
@@ -21,6 +23,25 @@ public class CamoBenchTileEnt extends BasicOwnedTileEnt {
 
     public CamoBenchTileEnt() {
         super(1, false);
+
+        this.inventory = new ItemStackHandlerPlus(1) {
+            @Override
+            protected boolean allowItemInSlot(int slot, ItemStack stack) {
+                return isCamoChangeable(stack);
+            }
+
+            @Override
+            public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+                return allowItemInSlot(slot, stack);
+            }
+        };
+    }
+
+    public static boolean isCamoChangeable(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        if (stack.getItem() instanceof ICamoChangeable) return true;
+        if (stack.getItem() instanceof ItemBlock) return CamoBenchRecipes.getRecipeFor(((ItemBlock) stack.getItem()).getBlock()) != null;
+        return false;
     }
 
     @Override
@@ -34,18 +55,8 @@ public class CamoBenchTileEnt extends BasicOwnedTileEnt {
      * @return
      */
     public ItemStack getItem() {
-        if (!this.inventory.getStackInSlot(0).isEmpty()) {
-            if (this.inventory.getStackInSlot(0).getItem() instanceof ICamoChangeable) {
-                return this.inventory.getStackInSlot(0);
-            } else if (this.inventory.getStackInSlot(0).getItem() instanceof ItemBlock) {
-                Block b = ((ItemBlock) this.inventory.getStackInSlot(0).getItem()).getBlock();
-                CamoBenchRecipe r = CamoBenchRecipes.getRecipeFor(b);
-                if (r != null) {
-                    return this.inventory.getStackInSlot(0);
-                }
-            }
-        }
-        return ItemStack.EMPTY;
+        ItemStack stack = this.inventory.getStackInSlot(0);
+        return isCamoChangeable(stack) ? stack : ItemStack.EMPTY;
     }
 
 
@@ -61,14 +72,13 @@ public class CamoBenchTileEnt extends BasicOwnedTileEnt {
 
                 if (id < BUTTON_ID_SECURITY + 3) {
                     ItemStack item = this.getItem();
-                    if (item != null && item.getItem() instanceof ICamoChangeable) {
-                        ICamoChangeable camoitem = (ICamoChangeable) item.getItem();
+                    if (item != null && item.getItem() instanceof ICamoChangeable camoitem) {
                         camoitem.switchCamo(item, id == BUTTON_ID_SECURITY + 2);
                         this.needUpdate();
                     } else if (item.getItem() instanceof ItemBlock) {
                         Block b = ((ItemBlock) item.getItem()).getBlock();
                         CamoBenchRecipe r = CamoBenchRecipes.getRecipeFor(b);
-                        if (b != null) {
+                        if (r != null) {
                             r.switchCamo(item, id == BUTTON_ID_SECURITY + 2);
                             this.needUpdate();
                         }
@@ -78,12 +88,10 @@ public class CamoBenchTileEnt extends BasicOwnedTileEnt {
                     int slotid = 3 - (((int) (Math.ceil((id - (BUTTON_ID_SECURITY + 2)) * 0.5))) - 1);
 
                     ItemStack item = ply.inventory.armorInventory.get(slotid);//this.content[slotid];
-                    if (!item.isEmpty() && item.getItem() instanceof ICamoChangeable) {
+                    if (!item.isEmpty() && item.getItem() instanceof ICamoChangeable camoitem) {
                         boolean back = id % 2 == odd_even;
 
-                        ICamoChangeable camoitem = (ICamoChangeable) item.getItem();
                         camoitem.switchCamo(item, back);
-                        //this.needUpdate();
                         ((EntityPlayerMP) ply).connection.sendPacket(new SPacketSetSlot(ply.openContainer.windowId, 37 + (3 - slotid), item));
                     }
 
@@ -92,10 +100,8 @@ public class CamoBenchTileEnt extends BasicOwnedTileEnt {
                     TGExtendedPlayer props = TGExtendedPlayer.get(ply);
                     if (props != null) {
                         ItemStack item = props.tg_inventory.inventory.get(TGPlayerInventory.SLOT_BACK);
-                        if (item != null && item.getItem() instanceof ICamoChangeable) {
-                            ICamoChangeable camoitem = (ICamoChangeable) item.getItem();
+                        if (!item.isEmpty() && item.getItem() instanceof ICamoChangeable camoitem) {
                             camoitem.switchCamo(item, back);
-                            //TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(ply, props, false), (EntityPlayerMP) ply);
                         }
                     }
                 } else if (id < BUTTON_ID_SECURITY + 15) {
@@ -103,10 +109,8 @@ public class CamoBenchTileEnt extends BasicOwnedTileEnt {
                     TGExtendedPlayer props = TGExtendedPlayer.get(ply);
                     if (props != null) {
                         ItemStack item = props.tg_inventory.inventory.get(TGPlayerInventory.SLOT_FACE);
-                        if (item != null && item.getItem() instanceof ICamoChangeable) {
-                            ICamoChangeable camoitem = (ICamoChangeable) item.getItem();
+                        if (!item.isEmpty() && item.getItem() instanceof ICamoChangeable camoitem) {
                             camoitem.switchCamo(item, back);
-                            //TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(ply, props, false), (EntityPlayerMP) ply);
                         }
                     }
                 }

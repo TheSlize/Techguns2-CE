@@ -9,6 +9,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import techguns.items.armors.GenericArmorMultiCamo;
 
 public class RenderArmorItem extends RenderItemBase {
 
@@ -63,13 +64,20 @@ public class RenderArmorItem extends RenderItemBase {
 		
 	}
 
+	protected ResourceLocation getTexture(ItemStack stack) {
+		if (!stack.isEmpty() && stack.getItem() instanceof GenericArmorMultiCamo armorCamo) {
+			return armorCamo.getCamoItemTexture(stack);
+		}
+		return this.texture;
+	}
+
 	@Override
 	public void renderItem(@NotNull TransformType transform, @NotNull ItemStack stack, EntityLivingBase elb, boolean leftHanded) {
 		
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0.5f, 0.5f, 0.5f);
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(this.getTexture(stack));
 
 		this.applyTranslation(transform);
 

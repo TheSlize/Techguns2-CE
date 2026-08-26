@@ -721,7 +721,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
             stack.setTagCompound(tags);
 
             int dmg = stack.getItemDamage();
-            tags.setByte("camo", (byte) 0);
             tags.setString("ammovariant", AmmoTypes.TYPE_DEFAULT);
             tags.setShort("ammo", dmg == 0 ? (short) this.clipsize : (short) (this.clipsize - dmg));
             stack.setItemDamage(0);
@@ -1002,14 +1001,20 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
     }
 
     protected String getTooltipTextDps() {
-        float dps = ((this.damageMin + this.damage) / 2f)
-                * (20f / Math.max(this.minFiretime, 1));
+        float baseDps = 20f / Math.max(this.minFiretime, 1);
         if (this.shotgun)
-            dps *= this.ammoCount;
+            baseDps *= this.ammoCount;
         if (this.projectile_selector.getFactoryForType("default") instanceof NDRProjectile.Factory)
-            dps *= NDRProjectile.BEAM_LIFETIME;
-        return TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f"
-                + String.format("%.2f", dps);
+            baseDps *= NDRProjectile.BEAM_LIFETIME;
+        float maxDps = baseDps * this.damage;
+        float minDps = baseDps * this.damageMin;
+        String dps;
+        if (minDps != maxDps)
+            dps = String.format("%.1f-%.1f", maxDps, minDps);
+        else
+            dps = String.format("%.1f", maxDps);
+
+        return TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f" + dps;
     }
 
     protected String getTooltipTextRange(ItemStack stack) {

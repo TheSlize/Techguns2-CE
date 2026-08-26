@@ -1211,3 +1211,12 @@ config.techguns.ore_drills.powermult_nether_crystal=Множитель энер�
 config.techguns.ore_drills.powermult_nether_crystal.tooltip=Множитель энергии для кластеров адских кристаллов.
 config.techguns.ore_drills.powermult_oil=Множитель энергии (Нефть)
 config.techguns.ore_drills.powermult_oil.tooltip=Множитель энергии для нефтяных кластеров.
+config.techguns.spawner_block=§e§lБлок спавнера
+config.techguns.spawner_block.spawnerBlockUseCustomEntitySpawn=Использовать кастомный спавн существ
+config.techguns.spawner_block.spawnerBlockUseCustomEntitySpawn.tooltip=false = режим TG по умолчанию (создает только мобов ITGSpawnerNPC из предустановленных наборов). true = пользовательский режим (создает любых EntityLiving из NBT-идентификатора типов мобов этого спавнера; используйте это при редактировании NBT-идентификатора спавнера, чтобы он указывал на сущности из других модов).
+config.techguns.srpIntegration=§4§lSRParasites интеграция
+config.techguns.srpIntegration.tooltip=Параметры для тех, кто использует Techguns с модом Scape and Run: Parasites (или другими модами со сложными монстрами)
+config.techguns.srpIntegration.rebalance_nucleardeathray=Ребаланс Атомного излучателя
+config.techguns.srpIntegration.rebalance_nucleardeathray.tooltip=Увеличить урон от Атомного излучателя, чтобы сделать его единственным оружием против паразитов. false = урон от Атомного излучателя по умолчанию.
+config.techguns.srpIntegration.rebalance_tfg=Ребаланс BFG-10K
+config.techguns.srpIntegration.rebalance_tfg.tooltip=Увеличить урон BFG-10K, чтобы сделать его более смертоносным для паразитов. false = стандартный урон BFG.
