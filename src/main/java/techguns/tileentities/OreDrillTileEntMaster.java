@@ -333,7 +333,7 @@ public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implem
         }
 
         if (amount > 0 && this.energy.getEnergyStored() >= amount) {
-            this.energy.extractEnergy(amount, false);
+            this.energy.extractEnergyInternal(amount, false);
             return true;
         } else return amount == 0;
     }

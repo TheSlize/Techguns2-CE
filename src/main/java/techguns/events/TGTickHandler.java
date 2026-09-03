@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -14,6 +15,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
@@ -28,6 +30,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import techguns.*;
+import techguns.api.guns.GunManager;
 import techguns.api.guns.IGenericGun;
 import techguns.api.npc.INPCTechgunsShooter;
 import techguns.api.radiation.TGRadiation;
@@ -77,13 +80,19 @@ public class TGTickHandler {
 				if (Minecraft.getMinecraft().inGameHasFocus && !event.player.isSpectator()) {
 					ItemStack stack = event.player.getHeldItemMainhand();
 					ItemStack stackOff = event.player.getHeldItemOffhand();
-					
-					if (!stack.isEmpty() && stack.getItem() instanceof IGenericGun && ((IGenericGun) stack.getItem()).isShootWithLeftClick()) {
+
+					if (TGEventHandler.isShootingGun(stack)) {
+						KeyBinding attack = Minecraft.getMinecraft().gameSettings.keyBindAttack;
+						if (attack.isKeyDown()) {
+							KeyBinding.setKeyBindState(attack.getKeyCode(), false);
+						}
+					}
+
+					if (!stack.isEmpty() && stack.getItem() instanceof IGenericGun gun && ((IGenericGun) stack.getItem()).isShootWithLeftClick()) {
 						if (cp.keyFirePressedMainhand) {
 							// event.player.swingItem();
-							
-							IGenericGun gun = (IGenericGun) stack.getItem();
-							if (props.getFireDelay(EnumHand.MAIN_HAND) <= 0) {
+
+                            if (props.getFireDelay(EnumHand.MAIN_HAND) <= 0) {
 								if (gun instanceof GenericGunCharge && ((GenericGunCharge)gun).getLockOnTicks() > 0 && props.lockOnEntity != null && props.lockOnTicks > ((GenericGunCharge)gun).getLockOnTicks()) {
 									TGPackets.wrapper.sendToServer(new PacketShootGunTarget(gun.isZooming(),EnumHand.MAIN_HAND, props.lockOnEntity));
 									gun.shootGunPrimary(stack, event.player.world, event.player, gun.isZooming(), EnumHand.MAIN_HAND, props.lockOnEntity);
@@ -102,11 +111,11 @@ public class TGTickHandler {
 						cp.keyFirePressedMainhand = false;
 					}
 					
-					if (!stackOff.isEmpty() && stackOff.getItem() instanceof IGenericGun && ((IGenericGun) stackOff.getItem()).isShootWithLeftClick()) {
+					if (!stackOff.isEmpty() && stackOff.getItem() instanceof IGenericGun gun && ((IGenericGun) stackOff.getItem()).isShootWithLeftClick()
+							&& GunManager.canUseOffhand(stack, stackOff)) {
 						if (cp.keyFirePressedOffhand) {
 							// event.player.swingItem();
-							IGenericGun gun = (IGenericGun) stackOff.getItem();
-							if (props.getFireDelay(EnumHand.OFF_HAND) <= 0) {
+                            if (props.getFireDelay(EnumHand.OFF_HAND) <= 0) {
 
 								TGPackets.wrapper.sendToServer(new PacketShootGun(gun.isZooming(),EnumHand.OFF_HAND));
 								gun.shootGunPrimary(stackOff, event.player.world, event.player, gun.isZooming(), EnumHand.OFF_HAND, null);
@@ -360,8 +369,16 @@ public class TGTickHandler {
                      if (!stack.isEmpty()){
                          ItemFood food = (ItemFood) stack.getItem();
 
-                         //check potion effect.
-                         food.onFoodEaten(stack, event.player.world, event.player);
+                         if (!event.player.world.isRemote){
+                             NBTTagCompound foodStatsBackup = new NBTTagCompound();
+                             event.player.getFoodStats().writeNBT(foodStatsBackup);
+                             ItemStack remainder = food.onItemUseFinish(stack.copy(), event.player.world, event.player);
+                             event.player.getFoodStats().readNBT(foodStatsBackup);
+
+                             if (!remainder.isEmpty() && !event.player.inventory.addItemStackToInventory(remainder)){
+                                 event.player.dropItem(remainder, false);
+                             }
+                         }
 
                          if (!event.player.world.isRemote){
                              event.player.world.playSound(null, event.player.posX, event.player.posY, event.player.posZ, SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1f, 1f);
@@ -484,9 +501,8 @@ public class TGTickHandler {
 	}
 	
 	protected static void tickSlot(ItemStack slot, PlayerTickEvent event) {
-		if (!slot.isEmpty() && slot.getItem() instanceof ITGSpecialSlot) {
-			ITGSpecialSlot item = (ITGSpecialSlot) slot.getItem();
-			item.onPlayerTick(slot, event);
+		if (!slot.isEmpty() && slot.getItem() instanceof ITGSpecialSlot item) {
+            item.onPlayerTick(slot, event);
 		}
 	}
 	

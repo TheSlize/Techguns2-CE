@@ -37,18 +37,24 @@ public class TGRecipes implements ITGInitializer {
         for (EnumConcreteType type : EnumConcreteType.values()) {
             int meta = type.ordinal();
             String typeName = type.getName();
-
-            addShaped(typeName + "_slab", new ItemStack(TGBlocks.CONCRETE_SLAB, 6, meta),
-                    "XXX",
-                    'X', new ItemStack(TGBlocks.CONCRETE, 1, meta)
-            );
-            if(meta == 4) {
-                addShaped(typeName + "_fence", new ItemStack(TGBlocks.CONCRETE_FENCE, 6, meta),
+            if(meta > 5) {
+                addShaped(typeName + "_slab", new ItemStack(TGBlocks.CONCRETE_SLAB_ALT, 6, meta - 6),
                         "XXX",
-                        "XXX",
-                        'X', new ItemStack(TGBlocks.CONCRETE, 1, 5)
+                        'X', new ItemStack(TGBlocks.CONCRETE, 1, meta)
                 );
             } else {
+                addShaped(typeName + "_slab", new ItemStack(TGBlocks.CONCRETE_SLAB, 6, meta),
+                        "XXX",
+                        'X', new ItemStack(TGBlocks.CONCRETE, 1, meta)
+                );
+            }
+            if(meta == 5) {
+                addShaped(typeName + "_fence", new ItemStack(TGBlocks.CONCRETE_FENCE, 6, 4),
+                        "XXX",
+                        "XXX",
+                        'X', new ItemStack(TGBlocks.CONCRETE, 1, meta)
+                );
+            } else if (meta < 4){
                 addShaped(typeName + "_fence", new ItemStack(TGBlocks.CONCRETE_FENCE, 6, meta),
                         "XXX",
                         "XXX",

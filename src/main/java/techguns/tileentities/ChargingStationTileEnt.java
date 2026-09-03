@@ -243,7 +243,7 @@ public class ChargingStationTileEnt extends BasicMachineTileEnt {
                     int maxcharge = Math.min(this.energy.getEnergyStored(), this.getItemChargeRate());
 
                     int pwr = itm.receiveEnergy(maxcharge, false);
-                    this.energy.extractEnergy(pwr, false);
+                    this.energy.extractEnergyInternal(pwr, false);
 
                     if (!this.world.isRemote) {
                         if (!this.charging) {

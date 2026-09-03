@@ -4,6 +4,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
+import techguns.tileentities.ReactionChamberTileEntMaster;
 import techguns.util.ItemStackOreDict;
 import techguns.util.TextUtil;
 
@@ -45,7 +46,7 @@ public class ReactionChamberRecipe implements IMachineRecipe {
         this.outputs.add(output);
         this.ticks = (byte) ticks;
         this.requiredCompletion = (byte) requiredCompletion;
-        this.preferredIntensity = (byte) preferredIntensity;
+        this.preferredIntensity = (byte) Math.max(ReactionChamberTileEntMaster.MIN_INTENSITY, Math.min(preferredIntensity, ReactionChamberTileEntMaster.MAX_INTENSITY));
         this.intensityMargin = (byte) intensityMargin;
         this.liquidLevel = (byte) liquidLevel;
         this.liquidConsumtion = liquidConsumtion;
@@ -68,7 +69,7 @@ public class ReactionChamberRecipe implements IMachineRecipe {
         this.outputs.addAll(Arrays.asList(outputs));
         this.ticks = (byte) ticks;
         this.requiredCompletion = (byte) requiredCompletion;
-        this.preferredIntensity = (byte) preferredIntensity;
+        this.preferredIntensity = (byte) Math.max(ReactionChamberTileEntMaster.MIN_INTENSITY, Math.min(preferredIntensity, ReactionChamberTileEntMaster.MAX_INTENSITY));
         this.intensityMargin = (byte) intensityMargin;
         this.liquidLevel = (byte) liquidLevel;
         this.liquidConsumtion = liquidConsumtion;

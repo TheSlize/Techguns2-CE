@@ -71,8 +71,12 @@ public class GenericBlockMetaEnum<T extends Enum<T> & IStringSerializable> exten
 
 	@Override
 	public @NotNull IBlockState getStateFromMeta(int meta) {
+		T[] values = clazz.getEnumConstants();
+		if (meta < 0 || meta >= values.length) {
+			meta = 0;
+		}
 		return this.getDefaultState()
-	    .withProperty(TYPE, clazz.getEnumConstants()[meta]);
+	    .withProperty(TYPE, values[meta]);
     }
 	
 	public Class<T> getClazz() {

@@ -30,8 +30,8 @@ public abstract class BasicPoweredTileEnt extends BasicRedstoneTileEnt {
         if (TGConfig.general.machinesNeedNoPower) {
             return true;
         }
-        if (this.energy.extractEnergy(amount, true) >= amount) {
-            return this.energy.extractEnergy(amount, false) >= amount;
+        if (this.energy.extractEnergyInternal(amount, true) >= amount) {
+            return this.energy.extractEnergyInternal(amount, false) >= amount;
         } else {
             return false;
         }

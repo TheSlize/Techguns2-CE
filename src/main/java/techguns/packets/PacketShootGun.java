@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import techguns.TGPackets;
+import techguns.api.guns.GunManager;
 import techguns.api.guns.IGenericGun;
 
 /**
@@ -53,6 +54,9 @@ public class PacketShootGun implements IMessage {
         private void handle(PacketShootGun message, MessageContext ctx) {
 
             EntityPlayer ply = TGPackets.getPlayerFromContext(ctx);
+            if (message.getHand() == EnumHand.OFF_HAND && !GunManager.canUseOffhand(ply)) {
+                return;
+            }
             ItemStack stack = ply.getHeldItem(message.getHand());
             if (!stack.isEmpty() && stack.getItem() instanceof IGenericGun) {
                 ((IGenericGun) stack.getItem()).shootGunPrimary(stack, ply.world, ply, message.isZooming, message.getHand(), null);

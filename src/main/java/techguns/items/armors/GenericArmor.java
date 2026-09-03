@@ -326,14 +326,14 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor, IItemTGRen
 
         EntityEquipmentSlot slot = this.armorType;
 
-        list.add(ChatFormatting.DARK_GRAY + I18n.format("techguns.armorTooltip.damageType.AR") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.PHYSICAL)));
-        list.add(ChatFormatting.GRAY + I18n.format("techguns.armorTooltip.damageType.PR") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.PROJECTILE)));
-        list.add(ChatFormatting.DARK_RED + I18n.format("techguns.armorTooltip.damageType.EX") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.EXPLOSION)));
-        list.add(ChatFormatting.DARK_AQUA + I18n.format("techguns.armorTooltip.damageType.E") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.ENERGY)));
-        list.add(ChatFormatting.RED + I18n.format("techguns.armorTooltip.damageType.F") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.FIRE)));
-        list.add(ChatFormatting.YELLOW + I18n.format("techguns.armorTooltip.damageType.L") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.LIGHTNING)));
-        list.add(ChatFormatting.DARK_GREEN + I18n.format("techguns.armorTooltip.damageType.P") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.POISON)));
-        list.add(ChatFormatting.GREEN + I18n.format("techguns.armorTooltip.damageType.RAD") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.RADIATION)));
+        list.add(ChatFormatting.DARK_GRAY + TextUtil.trans("techguns.armorTooltip.damageType.AR") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.PHYSICAL)));
+        list.add(ChatFormatting.GRAY + TextUtil.trans("techguns.armorTooltip.damageType.PR") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.PROJECTILE)));
+        list.add(ChatFormatting.DARK_RED + TextUtil.trans("techguns.armorTooltip.damageType.EX") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.EXPLOSION)));
+        list.add(ChatFormatting.DARK_AQUA + TextUtil.trans("techguns.armorTooltip.damageType.E") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.ENERGY)));
+        list.add(ChatFormatting.RED + TextUtil.trans("techguns.armorTooltip.damageType.F") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.FIRE)));
+        list.add(ChatFormatting.YELLOW + TextUtil.trans("techguns.armorTooltip.damageType.L") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.LIGHTNING)));
+        list.add(ChatFormatting.DARK_GREEN + TextUtil.trans("techguns.armorTooltip.damageType.P") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.POISON)));
+        list.add(ChatFormatting.GREEN + TextUtil.trans("techguns.armorTooltip.damageType.RAD") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.RADIATION)));
     }
 
     @Override

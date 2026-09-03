@@ -35,13 +35,18 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
     public static final int BUTTON_ID_AUTOSPLIT = ButtonConstants.BUTTON_ID_REDSTONE + 1;
     public static final int POWER_PER_TICK = 20;
     protected static final float SOUND_VOLUME = 0.5f;
-    protected static final int STEAM_CAPACITY = 16 * Fluid.BUCKET_VOLUME;
+    public static final int STEAM_CAPACITY = 16 * Fluid.BUCKET_VOLUME;
     protected static final int MAX_PRESSURE_LEVEL = 12;
     protected static final int PRESSURE_TICKS_PER_LEVEL = 40;
     public MachineSlotItem input1;
     public MachineSlotItem input2;
     protected int pressureLevel = 0;
-    protected int pressureTickCounter = 0;    protected final FluidTank steamTank = new FluidTank(STEAM_CAPACITY) {
+    protected int pressureTickCounter = 0;
+    protected final FluidTank steamTank = new FluidTank(STEAM_CAPACITY) {
+        {
+            this.setCanDrain(false);
+        }
+
         @Override
         public boolean canFillFluidType(FluidStack fluid) {
             return MetalPressTileEnt.this.canAcceptSteam(fluid);
@@ -62,17 +67,8 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
         }
 
         @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
-            FluidStack drained = super.drain(resource, doDrain);
-            if (drained != null && doDrain) {
-                MetalPressTileEnt.this.onSteamChanged();
-            }
-            return drained;
-        }
-
-        @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-            FluidStack drained = super.drain(maxDrain, doDrain);
+        public FluidStack drainInternal(int maxDrain, boolean doDrain) {
+            FluidStack drained = super.drainInternal(maxDrain, doDrain);
             if (drained != null && doDrain) {
                 MetalPressTileEnt.this.onSteamChanged();
             }
@@ -285,11 +281,11 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 
         if (requiresSteam && matchedRecipe.steamCost > 0) {
             int totalSteamCost = matchedRecipe.steamCost * multiplier;
-            FluidStack simulatedDrain = this.steamTank.drain(totalSteamCost, false);
+            FluidStack simulatedDrain = this.steamTank.drainInternal(totalSteamCost, false);
             if (simulatedDrain == null || simulatedDrain.amount < totalSteamCost) {
                 return;
             }
-            this.steamTank.drain(totalSteamCost, true);
+            this.steamTank.drainInternal(totalSteamCost, true);
         }
 
         this.input1.consume(multiplier * required1);

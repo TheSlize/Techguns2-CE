@@ -1,0 +1,7 @@
+{
+	"parent": "techguns:block/cable_arm_east",
+	"textures": {
+		"2": "techguns:blocks/cable_uranium",
+		"particle": "techguns:blocks/cable_uranium"
+	}
+}

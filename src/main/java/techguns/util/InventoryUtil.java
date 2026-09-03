@@ -388,7 +388,8 @@ public class InventoryUtil {
     public static ItemStack consumeFood(NonNullList<ItemStack> inv, int startIndex, int endIndex) {
         for (int i = startIndex; i < endIndex; ++i) {
             if (!inv.get(i).isEmpty() && inv.get(i).getItem() instanceof ItemFood) {
-                ItemStack food = new ItemStack(inv.get(i).getItem(), 1, inv.get(i).getItemDamage());
+                ItemStack food = inv.get(i).copy();
+                food.setCount(1);
                 inv.get(i).setCount(inv.get(i).getCount() - 1);
                 if (inv.get(i).getCount() <= 0) {
                     inv.set(i, ItemStack.EMPTY);

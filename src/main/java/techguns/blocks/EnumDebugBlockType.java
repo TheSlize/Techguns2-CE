@@ -5,11 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public enum EnumDebugBlockType implements IStringSerializable {
 	AIRMARKER,
-	ANTIAIRMARKER,
-	INTERIORMARKER_NORTH,
-	INTERIORMARKER_EAST,
-	INTERIORMARKER_SOUTH,
-	INTERIORMARKER_WEST;
+	ANTIAIRMARKER;
 
 	@Override
 	public @NotNull String getName() {

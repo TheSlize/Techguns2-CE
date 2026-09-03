@@ -9,6 +9,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import techguns.TGSounds;
 import techguns.*;
 import techguns.capabilities.TGExtendedPlayer;
@@ -35,7 +36,7 @@ public class GuidedMissileLauncher extends GenericGunCharge {
 	}
 
 	@Override
-	public void onUsingTick(ItemStack stack, EntityLivingBase player, int count) {
+	public void onUsingTick(@NotNull ItemStack stack, @NotNull EntityLivingBase player, int count) {
 		super.onUsingTick(stack, player, count);
 		
 		if (player.world.isRemote) {			
@@ -84,8 +85,7 @@ public class GuidedMissileLauncher extends GenericGunCharge {
 			raytraceresult = new RayTraceResult(entity);
 		}
 
-		if (raytraceresult != null && raytraceresult.entityHit instanceof EntityPlayer) {
-			EntityPlayer entityplayer = (EntityPlayer) raytraceresult.entityHit;
+		if (raytraceresult != null && raytraceresult.entityHit instanceof EntityPlayer entityplayer) {
 
 			if (shooter instanceof EntityPlayer && !((EntityPlayer) shooter).canAttackPlayer(entityplayer)) {
 				raytraceresult = null;

@@ -13,15 +13,18 @@ import techguns.api.damagesystem.DamageType;
 import techguns.api.damagesystem.IToolTGDamageSystem;
 import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
+import techguns.util.ItemUtil;
 import techguns.util.TextUtil;
 
 public class TGPickaxe extends ItemPickaxe implements IToolTGDamageSystem {
 
     protected DamageType dmgType = DamageType.PHYSICAL;
+    protected ToolMaterial mat;
     protected float penetration = 0.0f;
 
     public TGPickaxe(ToolMaterial mat, String name) {
         super(mat);
+        this.mat = mat;
         setCreativeTab(Techguns.tabTechgun);
         setRegistryName(name);
         setTranslationKey(Tags.MOD_ID + "." + name);
@@ -38,7 +41,10 @@ public class TGPickaxe extends ItemPickaxe implements IToolTGDamageSystem {
     @Override
     public void addInformation(@NotNull ItemStack stack, World worldIn, @NotNull List<String> tooltip, @NotNull ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
-        tooltip.add(TextUtil.trans("techguns.gun.tooltip.damageType") + ": " + this.dmgType.toString());
+        String dmgType = String.format(" (%s: %s§7)",
+                TextUtil.trans("techguns.gun.tooltip.damageType"),
+                this.dmgType.toString());
+        tooltip.add(TextUtil.trans("techguns.gun.tooltip.damage") + dmgType + ": §f" + ItemUtil.getMeleeDamage(stack));
         if (this.penetration > 0.0f) {
             tooltip.add(TextUtil.trans("techguns.gun.tooltip.armorPen") + ": " + this.penetration);
         }

@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import techguns.TGBlocks;
+import techguns.blocks.EnumDebugBlockType;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.world.dungeon.presets.specialblocks.SpecialBlockHandler;
@@ -42,8 +45,19 @@ public class Structure implements Serializable {
             for (int j = 0; j < sizeY; j++) {
                 for (int k = 0; k < sizeZ; k++) {
                     BlockPos bpos = new BlockPos(x + i, y + j, z + k);
-                    int layer = BlockData.getBlockLayer(world.getBlockState(bpos));
-                    MBlock mblock = new MBlock(world.getBlockState(bpos));
+                    IBlockState scanned = world.getBlockState(bpos);
+                    EnumDebugBlockType marker = (scanned.getBlock() == TGBlocks.DEBUG_BLOCK) ? scanned.getValue(TGBlocks.DEBUG_BLOCK.TYPE) : null;
+
+                    if (marker == EnumDebugBlockType.ANTIAIRMARKER) {
+                        continue;
+                    }
+
+                    if (marker == EnumDebugBlockType.AIRMARKER || scanned.getBlock() == Blocks.STRUCTURE_VOID) {
+                        scanned = Blocks.AIR.getDefaultState();
+                    }
+
+                    int layer = BlockData.getBlockLayer(scanned);
+                    MBlock mblock = new MBlock(scanned);
                     int index = structure.blocks.indexOf(mblock);
                     if (index < 0) {
                         structure.blocks.add(mblock);

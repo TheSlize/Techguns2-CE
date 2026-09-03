@@ -415,6 +415,7 @@ public class Recipewriter {
 	        RecipeJsonConverter.addShapedRecipe(new ItemStack(TGItems.DOOR3x3,2,1), "sps", "ppp","ppp", 's', Blocks.PISTON, 'p', p);
 	        RecipeJsonConverter.addShapedRecipe(new ItemStack(TGItems.DOOR3x3,2,2), "ppp", "ppp","sps", 's', Blocks.PISTON, 'p', p);
 	        RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.LADDER_0,16,TGBlocks.LADDER_0.getMetaFromState(TGBlocks.LADDER_0.getDefaultState())),"iii"," i ","iii", 'i', p);
+	        RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.WINDOW_FRAME_0,8,TGBlocks.WINDOW_FRAME_0.getMetaFromState(TGBlocks.WINDOW_FRAME_0.getDefaultState())),"iii","i i","iii", 'i', p);
 	        RecipeJsonConverter.addShapedRecipe(new ItemStack(COMPRESSED_AIR_TANK_EMPTY.getItem(), 7, COMPRESSED_AIR_TANK_EMPTY.getItemDamage()),"plp","p p","ppp", 'p', p, 'l', Blocks.LEVER);
 	        RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.METAL_PANEL,32), "sss","psp","sss", 's', "stone", 'p', p);
         });

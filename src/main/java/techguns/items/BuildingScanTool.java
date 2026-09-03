@@ -33,6 +33,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import techguns.TGBlocks;
+import techguns.blocks.EnumDebugBlockType;
 import techguns.util.BlockPosInd;
 import techguns.util.EntityPosInd;
 import techguns.util.MBlock;
@@ -270,15 +272,25 @@ public class BuildingScanTool extends GenericItem {
                     int coordZ = z + iz;
 
                     IBlockState bs = world.getBlockState(p.setPos(coordX, coordY, coordZ));
+                    Block scanned = bs.getBlock();
+                    EnumDebugBlockType marker = (scanned == TGBlocks.DEBUG_BLOCK) ? bs.getValue(TGBlocks.DEBUG_BLOCK.TYPE) : null;
 
-                    if ((bs != Blocks.AIR.getDefaultState()) && (bs != Blocks.DIRT.getDefaultState()) && (bs != Blocks.GRASS.getDefaultState())) {
-                        MBlock mblock = createMBlockFromWorld(world, p, bs);
-                        if (!blockList.contains(mblock)) {
-                            blockList.add(mblock);
-                            sbDefBlocks.append(getMBlockDefinition(mblock)).append("\n");
-                        }
-                        blockPosList.add(new BlockPosInd(ix, iy, iz, blockList.indexOf(mblock)));
+                    if (marker == EnumDebugBlockType.ANTIAIRMARKER) {
+                        continue;
                     }
+
+                    if (marker == EnumDebugBlockType.AIRMARKER || scanned == Blocks.STRUCTURE_VOID) {
+                        bs = Blocks.AIR.getDefaultState();
+                    } else if ((bs == Blocks.AIR.getDefaultState()) || (bs == Blocks.DIRT.getDefaultState()) || (bs == Blocks.GRASS.getDefaultState())) {
+                        continue;
+                    }
+
+                    MBlock mblock = createMBlockFromWorld(world, p, bs);
+                    if (!blockList.contains(mblock)) {
+                        blockList.add(mblock);
+                        sbDefBlocks.append(getMBlockDefinition(mblock)).append("\n");
+                    }
+                    blockPosList.add(new BlockPosInd(ix, iy, iz, blockList.indexOf(mblock)));
                 }
             }
         }

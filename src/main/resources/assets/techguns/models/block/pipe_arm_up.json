@@ -1,0 +1,51 @@
+{
+	"parent": "block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"2": "techguns:blocks/pipe",
+		"particle": "techguns:blocks/pipe"
+	},
+	"elements": [
+		{
+			"name": "up",
+			"from": [8, 8, 6.83],
+			"to": [12, 16, 10.83],
+			"rotation": {
+				"angle": 45,
+				"axis": "y",
+				"origin": [8, 12, 10.83]
+			},
+			"faces": {
+				"north": {
+					"uv": [8, 6, 12, 8],
+					"rotation": 270,
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [7.5, 8, 9.5, 12],
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [0, 7.5, 4, 9.5],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [6, 8, 8, 12],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [14, 0, 16, 2],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [0, 14, 2, 16],
+					"rotation": 90,
+					"texture": "#2"
+				}
+			}
+		}
+	]
+}

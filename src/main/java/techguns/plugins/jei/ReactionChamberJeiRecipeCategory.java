@@ -30,10 +30,10 @@ public class ReactionChamberJeiRecipeCategory extends BasicRecipeCategory<Reacti
     private static final int SLOT_INPUT_X = 30 - BG_U;
     private static final int SLOT_INPUT_Y = 65 - BG_V;
 
-    private static final int SLOT_FOCUS_X = 76 - BG_U;
+    private static final int SLOT_FOCUS_X = 75 - BG_U;
     private static final int SLOT_FOCUS_Y = 13 - BG_V;
 
-    private static final int SLOT_OUT0_X = 121 - BG_U;
+    private static final int SLOT_OUT0_X = 120 - BG_U;
     private static final int SLOT_OUT0_Y = 65 - BG_V;
 
     private static final int SLOT_OUT1_X = 138 - BG_U;

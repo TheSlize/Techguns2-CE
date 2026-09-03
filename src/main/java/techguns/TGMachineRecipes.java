@@ -245,7 +245,7 @@ public class TGMachineRecipes {
 
         ReactionChamberRecipe.addRecipe("RC_ANTIGRAV", new ItemStackOreDict(new ItemStack(Items.NETHER_STAR, 1)), TGItems.RC_HEAT_RAY, TGFluids.LIQUID_ENDER, new ItemStack[]{new ItemStack(TGItems.ANTI_GRAV_CORE.getItem(), 1, TGItems.ANTI_GRAV_CORE.getItemDamage())}, 10, 7, 8, 2, 4, 4000, 1f, RiskType.EXPLOSION_LOW, 500000);
 
-        ReactionChamberRecipe.addRecipe("RC_HELLISHINGOT", new ItemStackOreDict(new ItemStack(TGItems.INGOT_TITANIUM.getItem(), 1, TGItems.INGOT_TITANIUM.getItemDamage())), TGItems.RC_UV_EMITTER, TGFluids.LIQUID_TRITIUM, new ItemStack[]{new ItemStack(TGItems.INGOT_HELLISH.getItem(), 1, TGItems.INGOT_HELLISH.getItemDamage())}, 10, 3, 6, 3, 7, 2000, 1f, RiskType.EXPLOSION_MEDIUM, 100000);
+        ReactionChamberRecipe.addRecipe("RC_HELLISHINGOT", new ItemStackOreDict(new ItemStack(TGItems.INGOT_TITANIUM.getItem(), 1, TGItems.INGOT_TITANIUM.getItemDamage())), TGItems.RC_UV_EMITTER, TGFluids.LIQUID_TRITIUM, new ItemStack[]{new ItemStack(TGItems.INGOT_HELLISH.getItem(), 1, TGItems.INGOT_HELLISH.getItemDamage())}, 5, 3, 6, 0, 7, 2000, 0f, RiskType.EXPLOSION_MEDIUM, 100000);
 
         ReactionChamberRecipe.addRecipe("RC_URANIUM", new ItemStackOreDict(new ItemStack(TGItems.YELLOWCAKE.getItem(), 1, TGItems.YELLOWCAKE.getItemDamage())), TGItems.RC_HEAT_RAY, TGFluids.WATER, new ItemStack[]{new ItemStack(TGItems.ENRICHED_URANIUM.getItem(), 1, TGItems.ENRICHED_URANIUM.getItemDamage())}, 5, 4, 7, 0, 3, 1000, 0f, RiskType.BREAK_ITEM, 250000);
 

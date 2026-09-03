@@ -3,6 +3,8 @@ package techguns.client.render.tileentities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -21,13 +23,18 @@ import techguns.client.render.TGRenderHelper;
 import techguns.client.render.TGRenderHelper.RenderType;
 import techguns.tileentities.ReactionChamberTileEntMaster;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RenderReactionChamber extends TileEntitySpecialRenderer<ReactionChamberTileEntMaster> {
 
     protected static final ResourceLocation heatrayTexture = new ResourceLocation(Tags.MOD_ID, "textures/fx/heatray.png");
+    protected static final ResourceLocation uvrayTexture = new ResourceLocation(Tags.MOD_ID, "textures/fx/uvray.png");
 
     private static final double ONE_SIXTEENTH = 0.0625;
 
-    @SuppressWarnings("incomplete-switch")
+    private static final List<ReactionChamberTileEntMaster> PENDING_BEAMS = new ArrayList<>();
+
     @Override
     public void render(ReactionChamberTileEntMaster te, double x, double y, double z, float partialTicks,
                        int destroyStage, float alpha) {
@@ -50,112 +57,177 @@ public class RenderReactionChamber extends TileEntitySpecialRenderer<ReactionCha
                     double py = y + (-te.getPos().getY() + centerPos.getY()) + 0.5d;
                     double pz = z + (-te.getPos().getZ() + centerPos.getZ()) + 0.5d;
 
+                    float lastBrightnessX = OpenGlHelper.lastBrightnessX;
+                    float lastBrightnessY = OpenGlHelper.lastBrightnessY;
+                    int light = te.getWorld().getCombinedLight(centerPos, 0);
+
                     GlStateManager.pushMatrix();
                     GlStateManager.translate(px, py, pz);
                     GlStateManager.rotate(-90.0f * te.getMultiblockDirection().getOpposite().getHorizontalIndex(), 0f, 1f, 0f);
 
+                    GlStateManager.color(1f, 1f, 1f, 1f);
+                    GlStateManager.enableRescaleNormal();
+                    GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1f);
+                    GlStateManager.enableBlend();
+                    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                    RenderHelper.enableStandardItemLighting();
+                    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light % 65536, light / 65536);
+
                     Minecraft.getMinecraft().getRenderItem().renderItem(item, TransformType.GROUND);
+
+                    RenderHelper.disableStandardItemLighting();
+                    GlStateManager.disableBlend();
+                    GlStateManager.disableRescaleNormal();
+                    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastBrightnessX, lastBrightnessY);
+                    GlStateManager.color(1f, 1f, 1f, 1f);
 
                     GlStateManager.popMatrix();
                 }
             } else if (pass == 1) {
-                //Render Focus Effect
-                if (te.isWorking()) {
-
-                    GlStateManager.pushMatrix();
-
-                    double px = x + (-te.getPos().getX() + centerPos.getX()) + 0.5d;
-                    double py = y + 0.5d;
-                    double pz = z + (-te.getPos().getZ() + centerPos.getZ()) + 0.5d;
-                    GlStateManager.translate(px, py, pz);
-                    GlStateManager.depthMask(false);
-
-                    ItemStack stack = te.getInventory().getStackInSlot(ReactionChamberTileEntMaster.SLOT_FOCUS);
-                    if (!stack.isEmpty()) {
-
-                        renderBeamFocusEffect(te, partialTicks);
-                    }
-
-                    GlStateManager.depthMask(true);
-                    GlStateManager.popMatrix();
-                }
-
-                //Render Fluid
+                boolean hasBeam = te.isWorking()
+                        && !te.getInventory().getStackInSlot(ReactionChamberTileEntMaster.SLOT_FOCUS).isEmpty();
 
                 FluidStack liquid = te.inputTank.getFluid();
                 if (liquid != null) {
-                    bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+                    this.renderFluid(te, x, y, z, false);
 
-                    double w = 1.875 * 0.5;
-                    double h1 = 0.5;
-                    double h2 = 2.9375;
-                    double level = (double) te.inputTank.getFluidAmount() / (double) te.inputTank.getCapacity();
-
-                    GlStateManager.pushMatrix();
-                    GlStateManager.translate(x, y, z);
-                    GlStateManager.enableBlend();
-                    GlStateManager.disableLighting();
-
-                    TextureAtlasSprite tex;
-                    if (te.isWorking()) {
-                        tex = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(te.inputTank.getFluid().getFluid().getFlowing().toString());
-                    } else {
-                        tex = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(te.inputTank.getFluid().getFluid().getStill().toString());
+                    //Write the fluid depth so chambers behind this one get occluded, never in front of an own beam
+                    if (!hasBeam) {
+                        this.renderFluid(te, x, y, z, true);
                     }
+                }
 
-                    Fluid f = te.inputTank.getFluid().getFluid();
-
-                    //set fluid color
-                    int clr = f.getColor(te.inputTank.getFluid());
-
-                    TGRenderHelper.enableFluidGlow(f.getLuminosity(te.inputTank.getFluid()));
-
-                    double dx = 0;
-                    double dz = 0;
-
-                    switch (te.getMultiblockDirection()) {
-                        case EAST:
-                            dx = 0.5 + ONE_SIXTEENTH;
-                            dz = -0.5 + ONE_SIXTEENTH;
-                            break;
-                        case WEST:
-                            dx = -1.5 + ONE_SIXTEENTH;
-                            dz = -0.5 + ONE_SIXTEENTH;
-                            break;
-                        case NORTH:
-                            dx = -0.5 + ONE_SIXTEENTH;
-                            dz = -1.5 + ONE_SIXTEENTH;
-                            break;
-                        case SOUTH:
-                            dx = -0.5 + ONE_SIXTEENTH;
-                            dz = 0.5 + ONE_SIXTEENTH;
-                            break;
-                    }
-
-                    this.drawFluidCubeWithTesselator(tex, dx, h1, dz, 2 * w, h2 * level, h2, clr);
-
-                    TGRenderHelper.disableFluidGlow();
-                    GlStateManager.enableLighting();
-                    GlStateManager.disableBlend();
-                    GlStateManager.popMatrix();
-
-
+                //Queue the beam, it gets drawn after the world so no other chamber's fluid can blend over it
+                if (hasBeam && !PENDING_BEAMS.contains(te)) {
+                    PENDING_BEAMS.add(te);
                 }
             }
         }
 
     }
 
-    private void renderBeamFocusEffect(ReactionChamberTileEntMaster tile, float ptt) {
+    @SuppressWarnings("incomplete-switch")
+    private void renderFluid(ReactionChamberTileEntMaster te, double x, double y, double z, boolean depthOnly) {
+        TextureAtlasSprite tex;
+        if (te.isWorking()) {
+            tex = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(te.inputTank.getFluid().getFluid().getFlowing().toString());
+        } else {
+            tex = Minecraft.getMinecraft().getTextureMapBlocks().getTextureExtry(te.inputTank.getFluid().getFluid().getStill().toString());
+        }
+        if (tex == null) {
+            return;
+        }
+
+        Fluid f = te.inputTank.getFluid().getFluid();
+        int clr = f.getColor(te.inputTank.getFluid());
+
+        double w = 1.875 * 0.5;
+        double h1 = 0.5;
+        double h2 = 2.9375;
+        double level = (double) te.inputTank.getFluidAmount() / (double) te.inputTank.getCapacity();
+
+        double dx = 0;
+        double dz = 0;
+
+        switch (te.getMultiblockDirection()) {
+            case EAST:
+                dx = 0.5 + ONE_SIXTEENTH;
+                dz = -0.5 + ONE_SIXTEENTH;
+                break;
+            case WEST:
+                dx = -1.5 + ONE_SIXTEENTH;
+                dz = -0.5 + ONE_SIXTEENTH;
+                break;
+            case NORTH:
+                dx = -0.5 + ONE_SIXTEENTH;
+                dz = -1.5 + ONE_SIXTEENTH;
+                break;
+            case SOUTH:
+                dx = -0.5 + ONE_SIXTEENTH;
+                dz = 0.5 + ONE_SIXTEENTH;
+                break;
+        }
+
+        bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, z);
+        GlStateManager.disableLighting();
+
+        if (depthOnly) {
+            GlStateManager.colorMask(false, false, false, false);
+            GlStateManager.depthMask(true);
+        } else {
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            GlStateManager.color(1f, 1f, 1f, 1f);
+            GlStateManager.depthMask(false);
+            TGRenderHelper.enableFluidGlow(f.getLuminosity(te.inputTank.getFluid()));
+        }
+
+        this.drawFluidCubeWithTesselator(tex, dx, h1, dz, 2 * w, h2 * level, h2, clr);
+
+        if (depthOnly) {
+            GlStateManager.colorMask(true, true, true, true);
+        } else {
+            TGRenderHelper.disableFluidGlow();
+            GlStateManager.depthMask(true);
+            GlStateManager.disableBlend();
+        }
+
+        GlStateManager.enableLighting();
+        GlStateManager.popMatrix();
+    }
+
+    public static void renderPendingBeams(float partialTicks) {
+        if (PENDING_BEAMS.isEmpty()) {
+            return;
+        }
+
+        double vx = TileEntityRendererDispatcher.staticPlayerX;
+        double vy = TileEntityRendererDispatcher.staticPlayerY;
+        double vz = TileEntityRendererDispatcher.staticPlayerZ;
+
+        for (ReactionChamberTileEntMaster te : PENDING_BEAMS) {
+            if (te.isInvalid() || !te.isFormed()) {
+                continue;
+            }
+
+            BlockPos beamPos = te.getPos().offset(te.getMultiblockDirection());
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(beamPos.getX() + 0.5d - vx, te.getPos().getY() + 0.5d - vy, beamPos.getZ() + 0.5d - vz);
+            GlStateManager.depthMask(false);
+
+            renderBeamFocusEffect(te, partialTicks);
+
+            GlStateManager.depthMask(true);
+            GlStateManager.popMatrix();
+        }
+
+        PENDING_BEAMS.clear();
+    }
+
+    private static ResourceLocation getBeamTexture(ReactionChamberTileEntMaster tile) {
+        ItemStack focus = tile.getInventory().getStackInSlot(ReactionChamberTileEntMaster.SLOT_FOCUS);
+        if (!focus.isEmpty() && focus.getItem() == TGItems.RC_UV_EMITTER.getItem()
+                && focus.getItemDamage() == TGItems.RC_UV_EMITTER.getItemDamage()) {
+            return uvrayTexture;
+        }
+        return heatrayTexture;
+    }
+
+    private static void renderBeamFocusEffect(ReactionChamberTileEntMaster tile, float ptt) {
         Tessellator tess = Tessellator.getInstance();
 
         //----------------
         //HEAT RAY
-        TGRenderHelper.enableFXLighting();
         TGRenderHelper.enableBlendMode(RenderType.ADDITIVE);
         GlStateManager.disableCull();
+        GlStateManager.disableAlpha();
+        GlStateManager.color(1f, 1f, 1f, 1f);
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(heatrayTexture);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(getBeamTexture(tile));
 
         double d = ((double) (tile.progress % 10) + ptt) / 10.0;
         d = 0.875 + (0.125 * (1.0 - Math.cos(Math.PI * d * 2.0)));
@@ -171,6 +243,7 @@ public class RenderReactionChamber extends TileEntitySpecialRenderer<ReactionCha
         float angle = (float) (Math.atan2(pos.getX() + 0.5d - x1, pos.getZ() + 0.5d - z1) * 180.0 / Math.PI);
 
         GlStateManager.rotate(angle, 0f, 1f, 0f);
+        GlStateManager.translate(0.0d, 0.0d, 0.3d);
 
         BufferBuilder buf = tess.getBuffer();
 
@@ -182,12 +255,13 @@ public class RenderReactionChamber extends TileEntitySpecialRenderer<ReactionCha
         buf.pos(w, h1, 0.0D).tex(1, 1).endVertex();
         tess.draw();
 
+        GlStateManager.enableAlpha();
         GlStateManager.enableCull();
-        TGRenderHelper.disableFXLighting();
         TGRenderHelper.disableBlendMode(RenderType.ADDITIVE);
 
         /*Reactivate Alpha blending*/
-        TGRenderHelper.enableBlendMode(RenderType.ALPHA);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         //------------------
 
     }

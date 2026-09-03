@@ -17,7 +17,7 @@ import java.util.List;
 
 public class TeslaProjectile extends AbstractBeamProjectile{
 
-	public static final int TTL = 1;
+	public static final int TTL = 10;
 	public static final float CHAIN_RANGE = 8.0f;
 	public static final int CHAIN_TARGETS = 4;
 	public static final float CHAIN_DAMAGE_FACTOR = 0.75f;

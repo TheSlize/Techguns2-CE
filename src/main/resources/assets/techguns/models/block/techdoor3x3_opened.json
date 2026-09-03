@@ -1,5 +1,8 @@
 {
-	"textures": {"1": "techguns:blocks/techdoor3x3"},
+	"textures": {
+		"particle": "techguns:blocks/techdoor3x3",
+		"1": "techguns:blocks/techdoor3x3"
+	},
 	"elements": [
 		{
 			"name": "Frame_Top",

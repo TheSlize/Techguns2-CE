@@ -1,6 +1,7 @@
 {
 	"ambientocclusion": false,
 	"textures": {
+		"particle": "techguns:blocks/techdoor3x3_nether",
 		"0": "techguns:blocks/techdoor3x3_nether",
 		"1_0": "techguns:blocks/techdoor3x3_nether",
 		"2_0": "techguns:blocks/techdoor3x3_nether"

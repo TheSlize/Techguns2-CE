@@ -1,6 +1,11 @@
 package techguns.util;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -20,12 +25,22 @@ public class ItemUtil {
 
     public static void addToolClassesTooltip(HashMap<String, Integer> toolclasses, List<String> tooltip) {
         Set<String> ss = toolclasses.keySet();
-        if (ss.size() > 0) {
+        if (!ss.isEmpty()) {
             tooltip.add(TextUtil.trans("techguns.tooltip.toolclasses"));
             for (String s : toolclasses.keySet()) {
-                tooltip.add("  " + s + " : " + toolclasses.get(s));
+                tooltip.add("   - " + TextUtil.trans("techguns.toolclass." + s) + " : " + toolclasses.get(s));
             }
         }
+    }
+
+    public static float getMeleeDamage(ItemStack stack) {
+        float damage = 1.0f;
+        for (AttributeModifier mod : stack.getAttributeModifiers(EntityEquipmentSlot.MAINHAND).get(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
+            if (mod.getOperation() == 0) {
+                damage += (float) mod.getAmount();
+            }
+        }
+        return damage + EnchantmentHelper.getModifierForCreature(stack, EnumCreatureAttribute.UNDEFINED);
     }
 
     public static boolean isItemEqual(ItemStack item1, ItemStack item2) {
@@ -63,6 +78,6 @@ public class ItemUtil {
      * @return
      */
     public static boolean existsInOredict(String key) {
-        return OreDictionary.getOres(key).size() > 0;
+        return !OreDictionary.getOres(key).isEmpty();
     }
 }

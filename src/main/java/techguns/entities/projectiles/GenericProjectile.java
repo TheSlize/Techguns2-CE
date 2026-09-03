@@ -112,7 +112,7 @@ public class GenericProjectile extends Entity implements IProjectile, IEntityAdd
 			offsetSide += tgshooter.getBulletOffsetSide();
 			offsetHeight += tgshooter.getBulletOffsetHeight();
 		}
-		
+
 		this.setLocationAndAngles(posX, posY, posZ, yaw + (float) (spread - (2 * Math.random() * spread)) * 40.0f,
 				pitch + (float) (spread - (2 * Math.random() * spread)) * 40.0f);
 
@@ -130,9 +130,9 @@ public class GenericProjectile extends Entity implements IProjectile, IEntityAdd
 			this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * Zzoom;
 			//offsetHeight -= Yzoom;
 		}
-		
+
 		this.posY += (-0.10000000149011612D+offsetHeight);
-		
+
 		this.setPosition(this.posX, this.posY, this.posZ);
 		// this.yOffset = 0.0F;
 		float f = 0.4F;
@@ -226,10 +226,9 @@ public class GenericProjectile extends Entity implements IProjectile, IEntityAdd
 			raytraceresult=raytraceresultEntity;
 		}
 		
-		if (raytraceresult != null && raytraceresult.entityHit instanceof EntityPlayer) {
-			EntityPlayer entityplayer = (EntityPlayer) raytraceresult.entityHit;
+		if (raytraceresult != null && raytraceresult.entityHit instanceof EntityPlayer entityplayer) {
 
-			if (this.shooter instanceof EntityPlayer && !((EntityPlayer) this.shooter).canAttackPlayer(entityplayer)) {
+            if (this.shooter instanceof EntityPlayer && !((EntityPlayer) this.shooter).canAttackPlayer(entityplayer)) {
 				raytraceresult = null;
 			}
 		}
@@ -360,10 +359,9 @@ public class GenericProjectile extends Entity implements IProjectile, IEntityAdd
 
 			TGDamageSource src = getProjectileDamageSource();
 
-			if (raytraceResultIn.entityHit instanceof EntityLivingBase) {
-				EntityLivingBase ent = (EntityLivingBase) raytraceResultIn.entityHit;
+			if (raytraceResultIn.entityHit instanceof EntityLivingBase ent) {
 
-				// Check for Headshot
+                // Check for Headshot
 
 				float dmg = DamageSystem.getDamageFactor(this.shooter, ent) * this.getDamage();
 

@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import org.jetbrains.annotations.NotNull;
 import techguns.api.radiation.TGRadiation;
 import techguns.api.tginventory.TGSlotType;
+import techguns.util.TextUtil;
 
 public class ItemGasMask extends ItemTGSpecialSlot {
 
@@ -56,7 +57,7 @@ public class ItemGasMask extends ItemTGSpecialSlot {
     public void addInformation(@NotNull ItemStack stack, World worldIn, @NotNull List<String> tooltip, @NotNull ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         if (this.radresist > 0) {
-            tooltip.add(ChatFormatting.BLUE + "RAD Resistance: " + this.radresist);
+            tooltip.add(ChatFormatting.BLUE + TextUtil.trans("desc.rad_resistance") + " " + this.radresist);
         }
     }
 

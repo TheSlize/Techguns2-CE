@@ -13,6 +13,7 @@ import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import techguns.gui.PoweredTileEntGui;
 import techguns.gui.TGBaseGui;
+import techguns.tileentities.ReactionChamberTileEntMaster;
 import techguns.tileentities.operation.ReactionChamberOperation;
 import techguns.tileentities.operation.ReactionChamberRecipe;
 import techguns.util.TextUtil;
@@ -154,10 +155,6 @@ public class ReactionChamberJeiRecipe extends BasicRecipeWrapper {
     private void drawRiskIcon(Minecraft minecraft) {
         int level = 0;
         switch (this.recipe.risk) {
-            case BREAK_ITEM:
-            case NONE:
-                level = 0;
-                break;
             case RAD_LOW:
             case RAD_MEDIUM:
                 level = 1;
@@ -172,7 +169,6 @@ public class ReactionChamberJeiRecipe extends BasicRecipeWrapper {
                 level = 3;
                 break;
             default:
-                level = 0;
                 break;
         }
         Gui.drawModalRectWithCustomSizedTexture(RISK_X, RISK_Y, 226, 88 + 12 * level, 12, 12, 256, 256);
@@ -213,8 +209,8 @@ public class ReactionChamberJeiRecipe extends BasicRecipeWrapper {
 
     private void drawIntensityDots(Minecraft minecraft) {
         int required = this.recipe.preferredIntensity;
-        if (required < 0) required = 0;
-        if (required > 10) required = 10;
+        if (required < ReactionChamberTileEntMaster.MIN_INTENSITY) required = ReactionChamberTileEntMaster.MIN_INTENSITY;
+        if (required > ReactionChamberTileEntMaster.MAX_INTENSITY) required = ReactionChamberTileEntMaster.MAX_INTENSITY;
 
         int shown = required;
 
@@ -224,8 +220,8 @@ public class ReactionChamberJeiRecipe extends BasicRecipeWrapper {
             if (val > this.recipe.intensityMargin) val = this.recipe.intensityMargin;
             if (val < -this.recipe.intensityMargin) val = -this.recipe.intensityMargin;
             shown = required + val;
-            if (shown < 0) shown = 0;
-            if (shown > 10) shown = 10;
+            if (shown < ReactionChamberTileEntMaster.MIN_INTENSITY) shown = ReactionChamberTileEntMaster.MIN_INTENSITY;
+            if (shown > ReactionChamberTileEntMaster.MAX_INTENSITY) shown = ReactionChamberTileEntMaster.MAX_INTENSITY;
         }
 
         for (int i = 1; i <= 10; i++) {

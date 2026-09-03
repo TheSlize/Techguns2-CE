@@ -64,10 +64,14 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
     public static final int BUTTON_ID_INTENSITY_INC = ButtonConstants.BUTTON_ID_REDSTONE + 3;
     public static final int BUTTON_ID_INTENSITY_DEC = ButtonConstants.BUTTON_ID_REDSTONE + 4;
     public static final int BUTTON_ID_DUMPTANK = ButtonConstants.BUTTON_ID_REDSTONE + 5;
+    public static final int BUTTON_ID_SET_FLUID_LIMIT = ButtonConstants.BUTTON_ID_REDSTONE + 6;
+    public static final byte MIN_INTENSITY = 1;
+    public static final byte MAX_INTENSITY = 10;
     public FluidTank inputTank;
     public MachineSlotItem input;
     public boolean fluidsChanged = false;
-    protected byte intensity = 0;
+    protected byte intensity = MIN_INTENSITY;
+    protected int fluidLimit = 0;
 
     public ReactionChamberTileEntMaster() {
         super(6, 1000000);
@@ -165,7 +169,8 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
         NBTTagCompound inputTankTags = tags.getCompoundTag("inputTank");
         this.inputTank.readFromNBT(inputTankTags);
 
-        this.intensity = tags.getByte("intensity");
+        this.setIntensity(tags.getByte("intensity"));
+        this.setFluidLimit(tags.getInteger("fluidLimit"));
 
         if (tags.hasKey("inputSlot")) {
             ItemStack inputSlot = new ItemStack(tags.getCompoundTag("inputSlot"));
@@ -191,6 +196,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
         tags.setTag("inputTank", inputTankTags);
 
         tags.setByte("intensity", this.intensity);
+        tags.setInteger("fluidLimit", this.fluidLimit);
 
         if (!this.input.get().isEmpty()) {
             NBTTagCompound inputSlot = new NBTTagCompound();
@@ -309,9 +315,9 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
         );
 
         if (rec != null) {
-            if (inputStack.getCount() >= rec.input.item.getCount()) {
+            if (inputStack.getCount() >= rec.input.stackSize) {
                 if (TGConfig.general.machinesNeedNoPower || rec.RFTick <= this.energy.getEnergyStored()) {
-                    int count = rec.input.item.getCount();
+                    int count = rec.input.stackSize;
                     this.currentOperation = new ReactionChamberOperation(rec, this);
                     this.input.consume(count);
                     this.totaltime = rec.ticks * ReactionChamberOperation.RECIPE_TICKRATE;
@@ -426,7 +432,15 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
     }
 
     public void setIntensity(byte intensity) {
-        this.intensity = intensity;
+        this.intensity = (byte) Math.max(MIN_INTENSITY, Math.min(intensity, MAX_INTENSITY));
+    }
+
+    public int getFluidLimit() {
+        return fluidLimit;
+    }
+
+    public void setFluidLimit(int fluidLimit) {
+        this.fluidLimit = Math.max(0, Math.min(fluidLimit, CAPACITY_INPUT_TANK));
     }
 
     public ReactionChamberOperation getCurrentReaction() {
@@ -518,17 +532,17 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
             if (this.isUseableByPlayer(ply)) {
                 switch (id) {
                     case BUTTON_ID_INTENSITY_INC:
-                        if (this.intensity < 11) {
-                            this.intensity = (byte) Integer.parseInt(data);
-                        }
+                        this.setIntensity((byte) Integer.parseInt(data));
                         break;
                     case BUTTON_ID_INTENSITY_DEC:
-                        if (this.intensity > 0) {
-                            this.intensity = 0;
-                        }
+                        this.setIntensity(MIN_INTENSITY);
                         break;
                     case BUTTON_ID_DUMPTANK: //drain input tank
                         dumpLiquid();
+                        break;
+                    case BUTTON_ID_SET_FLUID_LIMIT:
+                        this.setFluidLimit(Integer.parseInt(data));
+                        this.needUpdate();
                         break;
                 }
             }
@@ -606,7 +620,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
         if (args.count() < 1)
             return new Object[]{false, "no intensity level specified"};
 
-        byte newIntensity = (byte) Math.max(0, Math.min(args.checkInteger(0), 10));
+        byte newIntensity = (byte) Math.max(MIN_INTENSITY, Math.min(args.checkInteger(0), MAX_INTENSITY));
 
         setIntensity(newIntensity);
         return new Object[]{getIntensity() == newIntensity};
@@ -661,10 +675,12 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
             super(tile, capacity);
             this.setTileEntity(tile);
             this.tile = tile;
+            this.setCanDrain(false);
         }
 
         private int getFillCapacity() {
-            return CAPACITY_INPUT_TANK;
+            int limit = tile != null ? tile.getFluidLimit() : 0;
+            return limit > 0 ? Math.min(limit, CAPACITY_INPUT_TANK) : CAPACITY_INPUT_TANK;
         }
 
         @Override
@@ -689,7 +705,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
                     return 0;
                 }
 
-                return Math.min(fillCapacity - fluid.amount, resource.amount);
+                return Math.max(0, Math.min(fillCapacity - fluid.amount, resource.amount));
             }
 
             if (fluid == null) {
@@ -707,6 +723,10 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
                 return 0;
             }
             int filled = fillCapacity - fluid.amount;
+
+            if (filled <= 0) {
+                return 0;
+            }
 
             if (resource.amount < filled) {
                 fluid.amount += resource.amount;
@@ -741,6 +761,9 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 
         @Override
         public FluidStack drainInternal(int maxDrain, boolean doDrain) {
+            if (fluid == null || maxDrain <= 0) {
+                return null;
+            }
             int maxDrainAmount = Math.max(fluid.amount - CAPACITY_INPUT_TANK, 0);
             int drainAmount = Math.min(maxDrainAmount, maxDrain);
 

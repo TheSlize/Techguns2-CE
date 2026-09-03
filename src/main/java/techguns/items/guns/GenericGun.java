@@ -355,6 +355,10 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
         return lockOnTicks;
     }
 
+    public boolean hasSecondaryAction() {
+        return this.canZoom && this.toggleZoom;
+    }
+
     /**
      * Called only clientside!, requires packets for actions other than zoom (clientside
      *
@@ -384,7 +388,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
     @Override
     public @NotNull ActionResult<ItemStack> onItemRightClick(@NotNull World worldIn, @NotNull EntityPlayer playerIn, @NotNull EnumHand handIn) {
-        this.gunSecondaryAction(playerIn, playerIn.getHeldItem(handIn));
         return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
     }
 
@@ -517,7 +520,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                         accuracybonus *= this.zoombonus;
                         if (fireCenteredZoomed) {
                             firePos = EnumBulletFirePos.CENTER;
-                        } else if (player.getPrimaryHand() == EnumHandSide.RIGHT && hand == EnumHand.MAIN_HAND) {
+                        } else if (hand == EnumHand.MAIN_HAND) {
                             firePos = EnumBulletFirePos.ZOOMED;
                         }
 

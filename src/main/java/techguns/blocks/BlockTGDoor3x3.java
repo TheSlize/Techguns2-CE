@@ -194,10 +194,12 @@ public class BlockTGDoor3x3<T extends Enum<T> & IStringSerializable> extends Gen
 	
 	@Override
 	public @NotNull IBlockState getActualState(@NotNull IBlockState state, IBlockAccess worldIn, @NotNull BlockPos pos) {
-		TileEntity tile = worldIn.getTileEntity(pos);
+		TileEntity tile = worldIn.getTileEntity(this.findMaster(worldIn, pos, state));
 		if(tile instanceof Door3x3TileEntity) {
 			Door3x3TileEntity door = (Door3x3TileEntity) tile;
-			return state.withProperty(TYPE, EnumDoorType.values()[door.getDoorType()]);
+			EnumDoorType[] types = EnumDoorType.values();
+			int type = door.getDoorType();
+			return state.withProperty(TYPE, types[type>=0 && type<types.length ? type : 0]);
 		}
 		
 		return state;

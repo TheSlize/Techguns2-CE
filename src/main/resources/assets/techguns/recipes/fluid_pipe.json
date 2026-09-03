@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "techguns:fluid_pipe",
+    "count": 16
+  },
+  "pattern": [
+    "iii",
+    "ggg",
+    "iii"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "i": {
+      "item": "#INGOTIRON"
+    },
+    "g": {
+      "item": "#PANEGLASS"
+    }
+  }
+}

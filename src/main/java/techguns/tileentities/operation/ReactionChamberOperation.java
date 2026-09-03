@@ -107,13 +107,13 @@ public class ReactionChamberOperation extends MachineOperation {
 
                     if (rnd.nextBoolean()) {
                         this.required_intensity -= val;
-                        if (this.required_intensity < 0) {
-                            this.required_intensity = 0;
+                        if (this.required_intensity < ReactionChamberTileEntMaster.MIN_INTENSITY) {
+                            this.required_intensity = ReactionChamberTileEntMaster.MIN_INTENSITY;
                         }
                     } else {
                         this.required_intensity += val;
-                        if (this.required_intensity > 10) {
-                            this.required_intensity = 10;
+                        if (this.required_intensity > ReactionChamberTileEntMaster.MAX_INTENSITY) {
+                            this.required_intensity = ReactionChamberTileEntMaster.MAX_INTENSITY;
                         }
                     }
 

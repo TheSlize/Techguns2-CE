@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -70,6 +71,7 @@ import techguns.client.render.entities.npcs.RenderAttackHelicopter;
 import techguns.client.render.entities.projectiles.DeathEffectEntityRenderer;
 import techguns.client.render.entities.projectiles.RenderGrenade40mmProjectile;
 import techguns.client.render.tileentities.RenderDoor3x3Fast;
+import techguns.client.render.tileentities.RenderReactionChamber;
 import techguns.damagesystem.DamageSystem;
 import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils;
@@ -82,6 +84,7 @@ import techguns.gui.widgets.SlotTG;
 import techguns.items.armors.GenericArmor;
 import techguns.items.armors.TGArmorBonus;
 import techguns.items.guns.*;
+import techguns.keybind.TGKeybinds;
 import techguns.packets.PacketEntityDeathType;
 import techguns.packets.PacketNotifyAmbientEffectChange;
 import techguns.packets.PacketRequestTGPlayerSync;
@@ -107,84 +110,117 @@ public class TGEventHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onMouseEvent(MouseEvent event) {
-        if (event.getButton() != -1) {
+        EntityPlayerSP ply = Minecraft.getMinecraft().player;
 
-            EntityPlayerSP ply = Minecraft.getMinecraft().player;
+        if (event.getButton() != -1 && ply != null && Minecraft.getMinecraft().inGameHasFocus) {
 
-            if (Minecraft.getMinecraft().inGameHasFocus) {
-                // System.out.println("MOUSE EVENT LMB");
-                if (event.getButton() == 0 && !ply.getHeldItemMainhand().isEmpty() && ply.getHeldItemMainhand().getItem() instanceof IGenericGun) {
+            int keyCode = event.getButton() - 100;
+            boolean primary = keyCode == TGKeybinds.KEY_SHOOT.getKeyCode();
 
-                    ClientProxy cp = ClientProxy.get();
+            if ((primary || keyCode == TGKeybinds.KEY_SHOOT_SECONDARY.getKeyCode())
+                    && handleGunKey(ply, primary, event.isButtonstate(), keyCode)) {
+                event.setCanceled(true);
+            }
 
-                    if (((IGenericGun) ply.getHeldItemMainhand().getItem()).isShootWithLeftClick()) {
-                        cp.keyFirePressedMainhand = event.isButtonstate();
-                        event.setCanceled(true);
+            if (!event.isCanceled() && keyCode == Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode() && isShootingGun(ply.getHeldItemMainhand())) {
+                event.setCanceled(true);
+            }
 
-                        // can't mine/attack while reloading
-                    } else if (ShooterValues.getReloadtime(ClientProxy.get().getPlayerClient(), false) > 0) {
-                        long diff = ShooterValues.getReloadtime(ClientProxy.get().getPlayerClient(), false) - System.currentTimeMillis();
-                        if (diff > 0) {
-                            if (event.isButtonstate()) {
-                                event.setCanceled(true);
-                            }
-                        }
+            if (event.isCanceled()) {
+                KeyBinding.setKeyBindState(keyCode, false);
+            }
+        }
+    }
 
-                    }
-                } /*else if (event.getButton() == 1 && !GunManager.canUseOffhand(ply)) {
-					if(!ply.getHeldItemMainhand().isEmpty()&&ply.getHeldItemMainhand().getItem() instanceof GenericGunCharge) {
-						//Charging gun is allowed
-					} else if (!ply.getHeldItemMainhand().isEmpty() && ply.getHeldItemMainhand().getItem() instanceof GenericGun){
-						GenericGun g = (GenericGun) ply.getHeldItemMainhand().getItem();
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+        if (isShootingGun(event.getEntityPlayer().getHeldItemMainhand())) {
+            event.setCanceled(true);
+        }
+    }
 
-						//Cancel and call secondary action
-						if (!ply.isSneaking() && event.isButtonstate()) {
-							boolean use = g.gunSecondaryAction(ply, ply.getHeldItemMainhand());
-							event.setCanceled(use);
-						}
+    protected static boolean isShootingGun(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() instanceof IGenericGun gun && gun.isShootWithLeftClick();
+    }
 
-					}
+    @SideOnly(Side.CLIENT)
+    public static boolean handleGunKey(EntityPlayerSP ply, boolean primary, boolean pressed, int keyCode) {
+        if (ply == null) return false;
 
-				} */ else if (event.getButton() == 1 && !ply.isSneaking() && !ply.getHeldItemOffhand().isEmpty() && ply.getHeldItemOffhand().getItem() instanceof IGenericGun && GunManager.canUseOffhand(ply)) {
+        ClientProxy cp = ClientProxy.get();
+        ItemStack stack_main = ply.getHeldItemMainhand();
+        ItemStack stack_off = ply.getHeldItemOffhand();
 
-                    ClientProxy cp = ClientProxy.get();
+        if (!pressed) {
+            if (primary) {
+                cp.keyFirePressedMainhand = false;
+            } else {
+                cp.keyFirePressedOffhand = false;
+            }
+        }
 
-                    if (((IGenericGun) ply.getHeldItemOffhand().getItem()).isShootWithLeftClick()) {
-                        cp.keyFirePressedOffhand = event.isButtonstate();
-                        event.setCanceled(true);
+        if (primary) {
+            if (!stack_main.isEmpty() && stack_main.getItem() instanceof IGenericGun gun) {
+                if (gun.isShootWithLeftClick()) {
+                    cp.keyFirePressedMainhand = pressed;
+                    return true;
+                }
+                return pressed && isReloading(false);
+            }
+            return false;
+        }
 
-                        // can't mine/attack while reloading
-                    } else if (ShooterValues.getReloadtime(ClientProxy.get().getPlayerClient(), true) > 0) {
-                        long diff = ShooterValues.getReloadtime(ClientProxy.get().getPlayerClient(), true) - System.currentTimeMillis();
-                        if (diff > 0) {
-                            if (event.isButtonstate()) {
-                                event.setCanceled(true);
-                            }
-                        }
+        if (!ply.isSneaking() && !stack_off.isEmpty() && stack_off.getItem() instanceof IGenericGun gunOff && GunManager.canUseOffhand(ply)) {
+            if (gunOff.isShootWithLeftClick()) {
+                cp.keyFirePressedOffhand = pressed;
+                return true;
+            }
+            return pressed && isReloading(true);
+        }
 
-                    }
+        if (!stack_main.isEmpty() && stack_main.getItem() instanceof GenericGun gunMain) {
 
-                    //Lock On Weapon
-                } else if (event.getButton() == 1 && ply.getHeldItemMainhand().getItem() instanceof GenericGunCharge && ((GenericGunCharge) ply.getHeldItemMainhand().getItem()).getLockOnTicks() > 0) {
+            if (gunMain instanceof GenericGunCharge charge) {
+                if (charge.getLockOnTicks() > 0) {
                     TGExtendedPlayer props = TGExtendedPlayer.get(ply);
                     props.lockOnEntity = null;
                     props.lockOnTicks = -1;
                 }
 
+                int useKey = Minecraft.getMinecraft().gameSettings.keyBindUseItem.getKeyCode();
+                if (keyCode != useKey) {
+                    KeyBinding.setKeyBindState(useKey, pressed);
+                    if (pressed) {
+                        KeyBinding.onTick(useKey);
+                    }
+                }
+                return false;
+            }
+
+            if (gunMain.hasSecondaryAction()) {
+                if (pressed) {
+                    gunMain.gunSecondaryAction(ply, stack_main);
+                }
+                return keyCode == Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode();
             }
         }
+        return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private static boolean isReloading(boolean offhand) {
+        long reloadtime = ShooterValues.getReloadtime(ClientProxy.get().getPlayerClient(), offhand);
+        return reloadtime > 0 && reloadtime - System.currentTimeMillis() > 0;
     }
 
     protected static boolean allowOffhandUse(EntityPlayer player, EnumHand hand) {
         if (hand == EnumHand.MAIN_HAND) return true;
-        if (!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() instanceof IGenericGun) {
-            IGenericGun g = (IGenericGun) player.getHeldItemMainhand().getItem();
+        if (!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() instanceof IGenericGun g) {
             if (g.getGunHandType() == GunHandType.TWO_HANDED) {
                 return false;
             }
         }
-        if (!player.getHeldItemOffhand().isEmpty() && player.getHeldItemOffhand().getItem() instanceof IGenericGun) {
-            IGenericGun g = (IGenericGun) player.getHeldItemOffhand().getItem();
+        if (!player.getHeldItemOffhand().isEmpty() && player.getHeldItemOffhand().getItem() instanceof IGenericGun g) {
             return g.getGunHandType() != GunHandType.TWO_HANDED;
         }
         return true;
@@ -267,14 +303,12 @@ public class TGEventHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onRenderLivingEventPre(RenderLivingEvent.Pre event) {
-        if (event.getEntity() instanceof EntityPlayer) {
-            EntityPlayer ply = (EntityPlayer) event.getEntity();
+        if (event.getEntity() instanceof EntityPlayer ply) {
 
             ItemStack stack = ply.getHeldItemMainhand();
             if (!stack.isEmpty() && stack.getItem() instanceof GenericGun && ((GenericGun) stack.getItem()).hasBowAnim()) {
                 ModelBase mdl = event.getRenderer().getMainModel();
-                if (mdl instanceof ModelPlayer) {
-                    ModelPlayer model = (ModelPlayer) mdl;
+                if (mdl instanceof ModelPlayer model) {
                     if (ply.getPrimaryHand() == EnumHandSide.RIGHT) {
                         model.rightArmPose = ArmPose.BOW_AND_ARROW;
                     } else {
@@ -286,8 +320,7 @@ public class TGEventHandler {
                 ItemStack stack2 = ply.getHeldItemOffhand();
                 if (!stack2.isEmpty() && stack2.getItem() instanceof GenericGun && ((GenericGun) stack2.getItem()).hasBowAnim()) {
                     ModelBase mdl = event.getRenderer().getMainModel();
-                    if (mdl instanceof ModelPlayer) {
-                        ModelPlayer model = (ModelPlayer) mdl;
+                    if (mdl instanceof ModelPlayer model) {
 
                         if (ShooterValues.getIsCurrentlyUsingGun(ply, true)) {
 
@@ -357,8 +390,7 @@ public class TGEventHandler {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onLivingJumpEvent(LivingJumpEvent event) {
-        if (event.getEntity() instanceof EntityPlayer) {
-            EntityPlayer ply = (EntityPlayer) event.getEntity();
+        if (event.getEntity() instanceof EntityPlayer ply) {
             float jumpbonus = GenericArmor.getArmorBonusForPlayer(ply, TGArmorBonus.JUMP, true);
 
             ply.motionY += jumpbonus;
@@ -367,10 +399,9 @@ public class TGEventHandler {
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onLivingFallEvent(LivingFallEvent event) {
-        if (event.getEntity() instanceof EntityPlayer) {
+        if (event.getEntity() instanceof EntityPlayer ply) {
             boolean consume = event.getDistance() > 3.0f;
 
-            EntityPlayer ply = (EntityPlayer) event.getEntity();
             float fallbonus = GenericArmor.getArmorBonusForPlayer(ply, TGArmorBonus.FALLDMG, consume);
             float reduction = (fallbonus < 1 ? 1 - fallbonus : 0.0f);
             float freeheight = GenericArmor.getArmorBonusForPlayer(ply, TGArmorBonus.FREEHEIGHT, false);
@@ -388,8 +419,7 @@ public class TGEventHandler {
     public static void onBreakEventHigh(BreakSpeed event) {
         EntityPlayer ply = event.getEntityPlayer();
         ItemStack item = ply.getHeldItemMainhand();
-        if (!item.isEmpty() && item.getItem() instanceof GenericGunMeleeCharge) {
-            GenericGunMeleeCharge g = (GenericGunMeleeCharge) item.getItem();
+        if (!item.isEmpty() && item.getItem() instanceof GenericGunMeleeCharge g) {
             if (g.getMiningRadius(item) > 0) {
                 EnumFacing sidehit = g.getSideHitMining(ply.world, ply);
 
@@ -439,8 +469,7 @@ public class TGEventHandler {
                 tgplayer.addRadiation(-TGRadiationSystem.RADLOST_ON_DEATH);
             }
 
-            if (event.getSource() instanceof TGDamageSource) {
-                TGDamageSource tgs = (TGDamageSource) event.getSource();
+            if (event.getSource() instanceof TGDamageSource tgs) {
                 if (tgs.deathType != DeathType.DEFAULT) {
                     if (Math.random() < tgs.goreChance) {
                         if (EntityDeathUtils.hasSpecialDeathAnim(entity, tgs.deathType)) {
@@ -456,8 +485,7 @@ public class TGEventHandler {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (!event.getEntity().world.isRemote) {
-            if (event.getEntity() instanceof EntityPlayer) {
-                EntityPlayer ply = (EntityPlayer) event.getEntity();
+            if (event.getEntity() instanceof EntityPlayer ply) {
                 TGExtendedPlayer props = TGExtendedPlayer.get(ply);
                 if (props != null) {
                     TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(ply, props, true), (EntityPlayerMP) ply);
@@ -467,7 +495,6 @@ public class TGEventHandler {
                 }
 
             } else if (event.getEntity() instanceof TGDummySpawn) {
-                //
                 TGSpawnManager.handleSpawn(event.getWorld(), event.getEntity());
                 event.setCanceled(true);
             }
@@ -559,6 +586,7 @@ public class TGEventHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void onRenderWorldLast(RenderWorldLastEvent event) {
+        RenderReactionChamber.renderPendingBeams(event.getPartialTicks());
         ClientProxy.get().particleManager.renderParticles(Minecraft.getMinecraft().getRenderViewEntity(), event.getPartialTicks());
         GlStateManager.disableBlend();
         GlStateManager.blendFunc(SourceFactor.ONE, DestFactor.ZERO);
@@ -641,11 +669,10 @@ public class TGEventHandler {
         EntityPlayer ply = event.getHarvester();
         if (ply != null) {
             ItemStack stack = ply.getHeldItemMainhand();
-            if (!stack.isEmpty() && stack.getItem() instanceof MiningDrill && ply.isSneaking()) {
+            if (!stack.isEmpty() && stack.getItem() instanceof MiningDrill md && ply.isSneaking()) {
                 IBlockState state = event.getState();
                 if (state.getBlock().canSilkHarvest(ply.world, event.getPos(), state, ply)) {
 
-                    MiningDrill md = (MiningDrill) stack.getItem();
                     if (md.getAmmoLeft(stack) > 0) {
 
                         List<ItemStack> drops = event.getDrops();
@@ -702,8 +729,7 @@ public class TGEventHandler {
     public static void onBlockHighlight(DrawBlockHighlightEvent event) {
         EntityPlayer ply = event.getPlayer();
         ItemStack item = ply.getHeldItemMainhand();
-        if (!ply.isSneaking() && !item.isEmpty() && item.getItem() instanceof GenericGunMeleeCharge) {
-            GenericGunMeleeCharge g = (GenericGunMeleeCharge) item.getItem();
+        if (!ply.isSneaking() && !item.isEmpty() && item.getItem() instanceof GenericGunMeleeCharge g) {
             if (g.getMiningRadius(item) > 0 && g.getAmmoLeft(item) > 0) {
                 RayTraceResult target = event.getTarget();
                 if (target != null && target.typeOfHit == Type.BLOCK) {
@@ -771,8 +797,7 @@ public class TGEventHandler {
     @SubscribeEvent
     public static void onEntityConstruction(EntityConstructing event) {
 
-        if (event.getEntity() instanceof EntityLivingBase) {
-            EntityLivingBase elb = (EntityLivingBase) event.getEntity();
+        if (event.getEntity() instanceof EntityLivingBase elb) {
             elb.getAttributeMap().registerAttribute(TGRadiation.RADIATION_RESISTANCE).setBaseValue(0);
         }
     }

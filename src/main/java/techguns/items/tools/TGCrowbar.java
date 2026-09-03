@@ -37,7 +37,6 @@ public class TGCrowbar extends TGPickaxe {
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
 			ItemUtil.addToolClassesTooltip(harvestLevels, tooltip);
-			//tooltip.add(TextUtil.trans("techguns.tooltip.crowbar.destroycluster"));
 		} else {
 			ItemUtil.addShiftExpandedTooltip(tooltip);
 		}

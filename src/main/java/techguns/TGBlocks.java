@@ -45,7 +45,9 @@ public class TGBlocks implements ITGInitializer{
 	public static GenericBlockMetaEnum<EnumNetherMetalType> NETHER_METAL;
 		
 	public static BlockTGLadder<EnumLadderType> LADDER_0;
-	
+
+	public static BlockTGWindowFrame<EnumLadderType> WINDOW_FRAME_0;
+
 	public static GenericBlockMetaEnum<EnumConcreteType> CONCRETE;
 	
 	public static BlockTGDoor3x3<EnumDoorType> DOOR3x3;
@@ -72,6 +74,9 @@ public class TGBlocks implements ITGInitializer{
 
 	public static BlockTGSlab CONCRETE_SLAB;
 	public static BlockTGDoubleSlab CONCRETE_DOUBLE_SLAB;
+
+	public static BlockTGSlab CONCRETE_SLAB_ALT;
+	public static BlockTGDoubleSlab CONCRETE_DOUBLE_SLAB_ALT;
 
 	public static BlockTGSlab NETHER_METAL_SLAB;
 	public static BlockTGDoubleSlab NETHER_METAL_DOUBLE_SLAB;
@@ -102,6 +107,12 @@ public class TGBlocks implements ITGInitializer{
 	public static BlockOreCluster<EnumOreClusterType> ORE_CLUSTER;
 	
 	public static BlockOreDrill ORE_DRILL_BLOCK;
+	
+	public static BlockEnergyCable ENERGY_CABLE;
+	
+	public static BlockUraniumEnergyCable URANIUM_ENERGY_CABLE;
+	
+	public static BlockFluidPipe FLUID_PIPE;
 	
 	public void registerBlocks(RegistryEvent.Register<Block> event) {
 		BLOCKLIST.forEach(b -> b.registerBlock(event));
@@ -138,6 +149,9 @@ public class TGBlocks implements ITGInitializer{
 		
 		CONCRETE = (GenericBlockMetaEnum<EnumConcreteType>) new GenericBlockMetaEnumCamoChangeable<>("concrete", Material.ROCK, EnumConcreteType.class).setHardness(8.0f);
 		LADDER_0 = (BlockTGLadder<EnumLadderType>) new BlockTGLadder<>("ladder0", EnumLadderType.class).setHardness(6.0f);
+		WINDOW_FRAME_0 = new BlockTGWindowFrame<>("windowframe", EnumLadderType.class)
+				.setTextures("metal_ladder", "metal_ladder_shiny", "metal_ladder_rusty", "metal_ladder_carbon");
+		WINDOW_FRAME_0.setHardness(6.0f);
 		DOOR3x3 = (BlockTGDoor3x3<EnumDoorType>) new BlockTGDoor3x3<>("door3x3", EnumDoorType.class, TGItems.DOOR3x3).setHardness(6.0f);
 		CAMONET = new BlockTGCamoNet("camonet");
 		CAMONET_TOP = new BlockTGCamoNetTop("camonet_top");
@@ -164,6 +178,11 @@ public class TGBlocks implements ITGInitializer{
 		CONCRETE_SLAB = (BlockTGSlab) new BlockTGSlab("slab_concrete", Material.ROCK, SoundType.STONE).setTextures("concrete_brown", "concrete_brown_light", "concrete_grey", "concrete_grey_dark", "concrete_brown_pipes", "concrete_brown_light_scaff").setSideTexture(4, "concrete_brown").setHardness(8.0f);
 		CONCRETE_DOUBLE_SLAB = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_concrete", Material.ROCK, SoundType.STONE, CONCRETE_SLAB).setHardness(8.0f);
 		CONCRETE_SLAB.setDoubleSlab(CONCRETE_DOUBLE_SLAB);
+
+		CONCRETE_SLAB_ALT = (BlockTGSlab) new BlockTGSlab("slab_concrete_alt", Material.ROCK, SoundType.STONE).setTextures("concrete_brown_light_pipes", "concrete_grey_pipes", "concrete_grey_dark_pipes").setSideTexture(0, "concrete_brown_light")
+				.setSideTexture(1, "concrete_grey").setSideTexture(2, "concrete_grey_dark").setHardness(8.0f);
+		CONCRETE_DOUBLE_SLAB_ALT = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_concrete_alt", Material.ROCK, SoundType.STONE, CONCRETE_SLAB).setHardness(8.0f);
+		CONCRETE_SLAB_ALT.setDoubleSlab(CONCRETE_DOUBLE_SLAB_ALT);
 
 		NETHER_METAL_SLAB = (BlockTGSlab) new BlockTGSlab("slab_nethermetal", Material.ROCK, SoundType.STONE).setTextures("nethermetal_panel", "nethermetal_grate1", "nethermetal_grate2", "nethermetal_grey_dark", "nethermetal_grey",
 				"nethermetal_grey_tiles", "nethermetal_border_red", "nethermetal_plate_black").setSideTexture(6, "nethermetal_panel").setHardness(8.0f);
@@ -197,9 +216,13 @@ public class TGBlocks implements ITGInitializer{
 		
 		ORE_DRILL_BLOCK = new BlockOreDrill("oredrill");
 		
-		//if (TGConfig.misc.debug) {
-		DEBUG_BLOCK = new BlockDebugMarker("debugblock", Material.GROUND);
-		//}
+		ENERGY_CABLE = new BlockEnergyCable("energy_cable");
+		URANIUM_ENERGY_CABLE = new BlockUraniumEnergyCable("uranium_energy_cable");
+		FLUID_PIPE = new BlockFluidPipe("fluid_pipe");
+		
+		if (TGConfig.misc.debug) {
+			DEBUG_BLOCK = new BlockDebugMarker("debugblock", Material.GROUND);
+		}
 		
 		if(TGItems.WRITE_ITEM_JSON && event.getSide()==Side.CLIENT){
 			BLOCKLIST.stream().filter(t -> {
@@ -213,6 +236,8 @@ public class TGBlocks implements ITGInitializer{
 
 	@Override
 	public void init(FMLInitializationEvent event) {
+		TGWindowPanes.init();
+
 		ChiselIMCHelper.addChiselVariants("techguns:camonet", TGBlocks.CAMONET, EnumCamoNetType.class);
 		ChiselIMCHelper.addChiselVariants("techguns:camonettop", TGBlocks.CAMONET_TOP, EnumCamoNetType.class);
 		ChiselIMCHelper.addChiselVariants("techguns:metalpanel", TGBlocks.METAL_PANEL, TGMetalPanelType.class);
@@ -221,6 +246,7 @@ public class TGBlocks implements ITGInitializer{
 		
 		for(EnumLadderType t: EnumLadderType.values()) {
 			ChiselIMCHelper.addChiselVariation("techguns:metalladder", TGBlocks.LADDER_0.getRegistryName(), TGBlocks.LADDER_0.getMetaFromState(TGBlocks.LADDER_0.getDefaultState().withProperty(TGBlocks.LADDER_0.TYPE, t)));
+			ChiselIMCHelper.addChiselVariation("techguns:metalwindowframe", TGBlocks.WINDOW_FRAME_0.getRegistryName(), TGBlocks.WINDOW_FRAME_0.getMetaFromState(TGBlocks.WINDOW_FRAME_0.getDefaultState().withProperty(TGBlocks.WINDOW_FRAME_0.TYPE, t)));
 		}
 	}
 

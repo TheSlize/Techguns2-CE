@@ -1,0 +1,105 @@
+{
+	"multipart": [
+		{
+			"when": {
+				"OR": [
+					{
+						"north": "true",
+						"south": "false"
+					},
+					{
+						"south": "true",
+						"north": "false"
+					},
+					{
+						"east": "true",
+						"west": "false"
+					},
+					{
+						"west": "true",
+						"east": "false"
+					},
+					{
+						"up": "true",
+						"down": "false"
+					},
+					{
+						"down": "true",
+						"up": "false"
+					},
+					{
+						"north": "true",
+						"east": "true"
+					},
+					{
+						"north": "true",
+						"up": "true"
+					},
+					{
+						"east": "true",
+						"up": "true"
+					},
+					{
+						"north": "false",
+						"south": "false",
+						"east": "false",
+						"west": "false",
+						"up": "false",
+						"down": "false"
+					}
+				]
+			},
+			"apply": {
+				"model": "techguns:cable_uranium_center"
+			}
+		},
+		{
+			"when": {
+				"north": "true"
+			},
+			"apply": {
+				"model": "techguns:cable_uranium_arm_north"
+			}
+		},
+		{
+			"when": {
+				"south": "true"
+			},
+			"apply": {
+				"model": "techguns:cable_uranium_arm_south"
+			}
+		},
+		{
+			"when": {
+				"east": "true"
+			},
+			"apply": {
+				"model": "techguns:cable_uranium_arm_east"
+			}
+		},
+		{
+			"when": {
+				"west": "true"
+			},
+			"apply": {
+				"model": "techguns:cable_uranium_arm_west"
+			}
+		},
+		{
+			"when": {
+				"up": "true"
+			},
+			"apply": {
+				"model": "techguns:cable_uranium_arm_up"
+			}
+		},
+		{
+			"when": {
+				"down": "true"
+			},
+			"apply": {
+				"model": "techguns:cable_uranium_arm_down"
+			}
+		}
+	]
+}

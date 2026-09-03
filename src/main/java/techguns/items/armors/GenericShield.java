@@ -136,17 +136,16 @@ public class GenericShield extends ItemShield implements ICamoChangeable {
             ShieldStats s = ShieldStats.getStats(item, null);
             list.add(ChatFormatting.BLUE + TextUtil.transTG("armorTooltip.resistances") + ":");
 
-            list.add(ChatFormatting.DARK_GRAY + " AR: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.PHYSICAL)) + "%");
-            list.add(ChatFormatting.GRAY + " PR: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.PROJECTILE)) + "%");
-            list.add(ChatFormatting.DARK_RED + " EX: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.EXPLOSION)) + "%");
-            list.add(ChatFormatting.DARK_AQUA + " E: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.ENERGY)) + "%");
-
-            list.add(ChatFormatting.RED + " F: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.FIRE)) + "%");
-            list.add(ChatFormatting.AQUA + " I: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.ICE)) + "%");
-            list.add(ChatFormatting.YELLOW + " L: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.LIGHTNING)) + "%");
-            list.add(ChatFormatting.DARK_GREEN + " P: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.POISON)) + "%");
-            list.add(ChatFormatting.DARK_GRAY + " D: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.DARK)) + "%");
-            list.add(ChatFormatting.GREEN + " RAD: " + formatReduction.format(s.getReductionPercentAgainstType(DamageType.RADIATION)) + "%");
+            list.add(ChatFormatting.DARK_GRAY + TextUtil.trans("techguns.armorTooltip.damageType.AR") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.PHYSICAL)));
+            list.add(ChatFormatting.GRAY + TextUtil.trans("techguns.armorTooltip.damageType.PR") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.PROJECTILE)));
+            list.add(ChatFormatting.DARK_RED + TextUtil.trans("techguns.armorTooltip.damageType.EX") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.EXPLOSION)));
+            list.add(ChatFormatting.DARK_AQUA + TextUtil.trans("techguns.armorTooltip.damageType.E") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.ENERGY)));
+            list.add(ChatFormatting.RED + TextUtil.trans("techguns.armorTooltip.damageType.F") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.FIRE)));
+            list.add(ChatFormatting.AQUA + TextUtil.trans("techguns.armorTooltip.damageType.I") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.ICE)));
+            list.add(ChatFormatting.YELLOW + TextUtil.trans("techguns.armorTooltip.damageType.L") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.LIGHTNING)));
+            list.add(ChatFormatting.DARK_GREEN + TextUtil.trans("techguns.armorTooltip.damageType.P") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.POISON)));
+            list.add(ChatFormatting.DARK_GRAY + TextUtil.trans("techguns.armorTooltip.damageType.D") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.DARK)));
+            list.add(ChatFormatting.GREEN + TextUtil.trans("techguns.armorTooltip.damageType.RAD") + " " + formatReduction.format(s.getReductionAgainstType(DamageType.RADIATION)));
 
         } else {
             list.add(TextUtil.trans("techguns.gun.tooltip.shift1") + " " + ChatFormatting.GREEN + TextUtil.trans("techguns.gun.tooltip.shift2") + " " + ChatFormatting.GRAY + TextUtil.trans("techguns.gun.tooltip.shift3"));

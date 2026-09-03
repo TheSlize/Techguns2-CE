@@ -7,6 +7,8 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraftforge.client.settings.IKeyConflictContext;
+import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
@@ -16,12 +18,38 @@ import techguns.TGPackets;
 import techguns.*;
 import techguns.api.guns.GunManager;
 import techguns.capabilities.TGExtendedPlayer;
+import techguns.events.TGEventHandler;
 import techguns.items.guns.GenericGun;
 import techguns.packets.PacketTGKeybindPress;
 import techguns.util.InventoryUtil;
 
 @SideOnly(Side.CLIENT)
 public class TGKeybinds {
+
+    private static final int MOUSE_LEFT = -100;
+    private static final int MOUSE_RIGHT = -99;
+
+    /**
+     * Techguns overrides the vanilla attack/use action for guns, so its keys must not be shown as conflicting.
+     */
+    private static final IKeyConflictContext GUN_ACTION = new IKeyConflictContext() {
+        @Override
+        public boolean isActive() {
+            return KeyConflictContext.IN_GAME.isActive();
+        }
+
+        @Override
+        public boolean conflicts(IKeyConflictContext other) {
+            return false;
+        }
+    };
+
+    public static KeyBinding KEY_SHOOT;
+    public static KeyBinding KEY_SHOOT_SECONDARY;
+
+    private static boolean shootKeyDown = false;
+    private static boolean secondaryKeyDown = false;
+
     public static KeyBinding KEY_TOGGLE_NIGHTVISION;
     public static KeyBinding KEY_TOGGLE_SAFEMODE;
     public static KeyBinding KEY_FORCE_RELOAD;
@@ -35,6 +63,9 @@ public class TGKeybinds {
     public static KeyBinding KEY_TOGGLE_STEPASSIST;
 
     public static void init() {
+        KEY_SHOOT = new KeyBinding("techguns.key.shoot", GUN_ACTION, MOUSE_LEFT, "techguns.key.categories.techguns");
+        KEY_SHOOT_SECONDARY = new KeyBinding("techguns.key.shootSecondary", GUN_ACTION, MOUSE_RIGHT, "techguns.key.categories.techguns");
+
         KEY_TOGGLE_NIGHTVISION = new KeyBinding("techguns.key.toggleNightvision", Keyboard.KEY_N, "techguns.key.categories.techguns");
         KEY_TOGGLE_SAFEMODE = new KeyBinding("techguns.key.toggleSafemode", Keyboard.KEY_B, "techguns.key.categories.techguns");
         KEY_TOGGLE_STEPASSIST = new KeyBinding("techguns.key.toggleStepassist", Keyboard.KEY_V, "techguns.key.categories.techguns");
@@ -42,6 +73,8 @@ public class TGKeybinds {
         KEY_TOGGLE_JETPACK = new KeyBinding("techguns.key.toggleJetpack", Keyboard.KEY_J, "techguns.key.categories.techguns");
         KEY_TOGGLE_AMMO_TYPE = new KeyBinding("techguns.key.switchAmmo", Keyboard.KEY_T, "techguns.key.categories.techguns");
 
+        ClientRegistry.registerKeyBinding(KEY_SHOOT);
+        ClientRegistry.registerKeyBinding(KEY_SHOOT_SECONDARY);
         ClientRegistry.registerKeyBinding(KEY_TOGGLE_NIGHTVISION);
         ClientRegistry.registerKeyBinding(KEY_TOGGLE_SAFEMODE);
         ClientRegistry.registerKeyBinding(KEY_TOGGLE_STEPASSIST);
@@ -50,8 +83,31 @@ public class TGKeybinds {
         ClientRegistry.registerKeyBinding(KEY_TOGGLE_AMMO_TYPE);
     }
 
+    /**
+     * Mouse bound gun keys are handled in the MouseEvent, since techguns cancels that event and the vanilla
+     * keybind state is never set for them. Keyboard bound ones are polled here instead.
+     */
+    private static void updateGunKeys() {
+        Minecraft mc = Minecraft.getMinecraft();
+        boolean ingame = mc.player != null && mc.inGameHasFocus;
+
+        boolean shoot = ingame && KEY_SHOOT.getKeyCode() > 0 && KEY_SHOOT.isKeyDown();
+        if (shoot != shootKeyDown) {
+            shootKeyDown = shoot;
+            TGEventHandler.handleGunKey(mc.player, true, shoot, KEY_SHOOT.getKeyCode());
+        }
+
+        boolean secondary = ingame && KEY_SHOOT_SECONDARY.getKeyCode() > 0 && KEY_SHOOT_SECONDARY.isKeyDown();
+        if (secondary != secondaryKeyDown) {
+            secondaryKeyDown = secondary;
+            TGEventHandler.handleGunKey(mc.player, false, secondary, KEY_SHOOT_SECONDARY.getKeyCode());
+        }
+    }
+
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
+
+        updateGunKeys();
 
         if (KEY_TOGGLE_NIGHTVISION.isPressed()) {
             TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_NIGHTVISION, true));

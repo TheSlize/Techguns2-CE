@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import techguns.*;
+import techguns.tileentities.MetalPressTileEnt;
 
 public class MetalPressJeiRecipeCategory extends BasicRecipeCategory<MetalPressJeiRecipe> {
 
@@ -49,6 +50,13 @@ public class MetalPressJeiRecipeCategory extends BasicRecipeCategory<MetalPressJ
         guiItemStacks.init(SLOT_OUT, false, SLOT_OUT_X, SLOT_OUT_Y);
 
         guiItemStacks.set(ingredients);
+
+        if (recipeWrapper.recipe.requiresSteam()) {
+            IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
+            guiFluidStacks.init(0, true, MetalPressJeiRecipe.TANK_X + 1, MetalPressJeiRecipe.TANK_Y + 1,
+                    MetalPressJeiRecipe.TANK_W - 2, MetalPressJeiRecipe.TANK_H - 2, MetalPressTileEnt.STEAM_CAPACITY, false, null);
+            guiFluidStacks.set(ingredients);
+        }
     }
 
     @Override

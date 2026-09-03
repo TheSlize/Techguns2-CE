@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "techguns:energy_cable",
+    "count": 16
+  },
+  "pattern": [
+    "ppp",
+    "wew",
+    "ppp"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "p": {
+      "item": "minecraft:coal",
+      "data": 0
+    },
+    "w": {
+      "item": "#WIRECOPPER"
+    },
+    "e": {
+      "item": "#DUSTREDSTONE"
+    }
+  }
+}

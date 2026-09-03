@@ -1,0 +1,51 @@
+{
+	"parent": "block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"2": "techguns:blocks/cable",
+		"particle": "techguns:blocks/cable"
+	},
+	"elements": [
+		{
+			"name": "down",
+			"from": [8, 0, 6.83],
+			"to": [12, 8, 10.83],
+			"rotation": {
+				"angle": 45,
+				"axis": "y",
+				"origin": [8, 4, 10.83]
+			},
+			"faces": {
+				"north": {
+					"uv": [8, 6, 12, 8],
+					"rotation": 270,
+					"texture": "#2"
+				},
+				"east": {
+					"uv": [7.5, 8, 9.5, 12],
+					"texture": "#2"
+				},
+				"south": {
+					"uv": [8, 7.5, 12, 9.5],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"west": {
+					"uv": [6, 8, 8, 12],
+					"rotation": 180,
+					"texture": "#2"
+				},
+				"up": {
+					"uv": [0, 14, 2, 16],
+					"rotation": 90,
+					"texture": "#2"
+				},
+				"down": {
+					"uv": [0, 0, 2, 2],
+					"rotation": 90,
+					"texture": "#2"
+				}
+			}
+		}
+	]
+}

@@ -1,5 +1,8 @@
 {
-	"textures": {"1": "techguns:blocks/hangar_door"},
+	"textures": {
+		"particle": "techguns:blocks/hangar_door",
+		"1": "techguns:blocks/hangar_door"
+	},
 	"elements": [
 		{
 			"name": "cube",
