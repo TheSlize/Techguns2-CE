@@ -31,6 +31,10 @@ public class TGItemStackRenderer extends TileEntityItemStackRenderer {
             GlStateManager.scale(-1.0F, 1.0F, 1.0F);
         }
 
+        if (transform == ItemCameraTransforms.TransformType.GROUND && !TGItemRendererContext.isInternalRender()) {
+            ItemPhysicCompat.applyGroundRotationFix(stack);
+        }
+
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.enableLighting();
 

@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import techguns.blocks.machines.SimpleMachine;
+import techguns.client.render.TGItemRendererContext;
 import techguns.tileentities.ChargingStationTileEnt;
 
 public class RenderChargingStation extends TileEntitySpecialRenderer<ChargingStationTileEnt> {
@@ -31,7 +32,9 @@ public class RenderChargingStation extends TileEntitySpecialRenderer<ChargingSta
 
                 GlStateManager.rotate(-90.0f * dir.getHorizontalIndex(), 0f, 1f, 0f);
 
+                TGItemRendererContext.pushInternalRender();
                 Minecraft.getMinecraft().getRenderItem().renderItem(item, TransformType.GROUND);
+                TGItemRendererContext.popInternalRender();
 
                 GlStateManager.popMatrix();
             }

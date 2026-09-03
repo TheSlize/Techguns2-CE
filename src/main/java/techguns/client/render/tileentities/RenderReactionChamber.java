@@ -19,6 +19,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 import techguns.*;
+import techguns.client.render.TGItemRendererContext;
 import techguns.client.render.TGRenderHelper;
 import techguns.client.render.TGRenderHelper.RenderType;
 import techguns.tileentities.ReactionChamberTileEntMaster;
@@ -73,7 +74,9 @@ public class RenderReactionChamber extends TileEntitySpecialRenderer<ReactionCha
                     RenderHelper.enableStandardItemLighting();
                     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light % 65536, light / 65536);
 
+                    TGItemRendererContext.pushInternalRender();
                     Minecraft.getMinecraft().getRenderItem().renderItem(item, TransformType.GROUND);
+                    TGItemRendererContext.popInternalRender();
 
                     RenderHelper.disableStandardItemLighting();
                     GlStateManager.disableBlend();

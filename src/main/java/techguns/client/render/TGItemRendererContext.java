@@ -15,8 +15,24 @@ public final class TGItemRendererContext {
 
     private static final ThreadLocal<ItemCameraTransforms.TransformType> CURRENT_TRANSFORM = ThreadLocal.withInitial(() -> ItemCameraTransforms.TransformType.NONE);
     private static final ThreadLocal<Deque<EntityLivingBase>> ENTITY_STACK = ThreadLocal.withInitial(ArrayDeque::new);
+    private static final ThreadLocal<int[]> INTERNAL_RENDER_DEPTH = ThreadLocal.withInitial(() -> new int[1]);
 
     private TGItemRendererContext() {}
+
+    public static void pushInternalRender() {
+        INTERNAL_RENDER_DEPTH.get()[0]++;
+    }
+
+    public static void popInternalRender() {
+        int[] depth = INTERNAL_RENDER_DEPTH.get();
+        if (depth[0] > 0) {
+            depth[0]--;
+        }
+    }
+
+    public static boolean isInternalRender() {
+        return INTERNAL_RENDER_DEPTH.get()[0] > 0;
+    }
 
     public static void setTransform(ItemCameraTransforms.TransformType transform) {
         CURRENT_TRANSFORM.set(transform);

@@ -17,6 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import techguns.TGBlocks;
 import techguns.*;
 import techguns.api.render.IItemTGRenderer;
+import techguns.client.render.TGItemRendererContext;
 import techguns.items.guns.GenericGun;
 import techguns.tileentities.GrinderTileEnt;
 
@@ -124,7 +125,9 @@ public class RenderGrinder extends TileEntitySpecialRenderer<GrinderTileEnt> {
                         GlStateManager.rotate(90f, 0, 1, 0);
                     }
 
+                    TGItemRendererContext.pushInternalRender();
                     Minecraft.getMinecraft().getRenderItem().renderItem(item, TransformType.GROUND);
+                    TGItemRendererContext.popInternalRender();
 
                     GlStateManager.popMatrix();
                 }
