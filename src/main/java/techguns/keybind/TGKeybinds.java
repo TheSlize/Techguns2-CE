@@ -17,6 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import techguns.TGPackets;
 import techguns.*;
 import techguns.api.guns.GunManager;
+import techguns.api.guns.IGenericGun;
 import techguns.capabilities.TGExtendedPlayer;
 import techguns.events.TGEventHandler;
 import techguns.items.guns.GenericGun;
@@ -29,13 +30,40 @@ public class TGKeybinds {
     private static final int MOUSE_LEFT = -100;
     private static final int MOUSE_RIGHT = -99;
 
-    /**
-     * Techguns overrides the vanilla attack/use action for guns, so its keys must not be shown as conflicting.
-     */
-    private static final IKeyConflictContext GUN_ACTION = new IKeyConflictContext() {
+    private static boolean isGun(ItemStack stack) {
+        return !stack.isEmpty() && stack.getItem() instanceof IGenericGun;
+    }
+
+    private static final IKeyConflictContext GUN_ACTION_PRIMARY = new IKeyConflictContext() {
         @Override
         public boolean isActive() {
-            return KeyConflictContext.IN_GAME.isActive();
+            if (!KeyConflictContext.IN_GAME.isActive()) {
+                return false;
+            }
+            EntityPlayer ply = Minecraft.getMinecraft().player;
+            return ply != null && isGun(ply.getHeldItemMainhand());
+        }
+
+        @Override
+        public boolean conflicts(IKeyConflictContext other) {
+            return false;
+        }
+    };
+
+    private static final IKeyConflictContext GUN_ACTION_SECONDARY = new IKeyConflictContext() {
+        @Override
+        public boolean isActive() {
+            if (!KeyConflictContext.IN_GAME.isActive()) {
+                return false;
+            }
+            EntityPlayer ply = Minecraft.getMinecraft().player;
+            if (ply == null) {
+                return false;
+            }
+            if (isGun(ply.getHeldItemMainhand())) {
+                return true;
+            }
+            return !ply.isSneaking() && isGun(ply.getHeldItemOffhand()) && GunManager.canUseOffhand(ply);
         }
 
         @Override
@@ -63,8 +91,8 @@ public class TGKeybinds {
     public static KeyBinding KEY_TOGGLE_STEPASSIST;
 
     public static void init() {
-        KEY_SHOOT = new KeyBinding("techguns.key.shoot", GUN_ACTION, MOUSE_LEFT, "techguns.key.categories.techguns");
-        KEY_SHOOT_SECONDARY = new KeyBinding("techguns.key.shootSecondary", GUN_ACTION, MOUSE_RIGHT, "techguns.key.categories.techguns");
+        KEY_SHOOT = new KeyBinding("techguns.key.shoot", GUN_ACTION_PRIMARY, MOUSE_LEFT, "techguns.key.categories.techguns");
+        KEY_SHOOT_SECONDARY = new KeyBinding("techguns.key.shootSecondary", GUN_ACTION_SECONDARY, MOUSE_RIGHT, "techguns.key.categories.techguns");
 
         KEY_TOGGLE_NIGHTVISION = new KeyBinding("techguns.key.toggleNightvision", Keyboard.KEY_N, "techguns.key.categories.techguns");
         KEY_TOGGLE_SAFEMODE = new KeyBinding("techguns.key.toggleSafemode", Keyboard.KEY_B, "techguns.key.categories.techguns");
