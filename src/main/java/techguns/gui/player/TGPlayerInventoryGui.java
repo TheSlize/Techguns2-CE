@@ -92,23 +92,28 @@ public class TGPlayerInventoryGui extends TGBaseGui {
         tooltip.add(ChatFormatting.UNDERLINE + trans("tgguitooltip.totalarmorvalues"));
 
         EntityPlayer ply = Minecraft.getMinecraft().player;
-        tooltip.add(ChatFormatting.DARK_GRAY + trans("TGDamageType.PHYSICAL") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.PHYSICAL)));
-        tooltip.add(ChatFormatting.GRAY + trans("TGDamageType.PROJECTILE") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.PROJECTILE)));
 
-        tooltip.add(ChatFormatting.DARK_RED + trans("TGDamageType.EXPLOSION") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.EXPLOSION)));
+        float phys = DamageSystem.getTotalArmorAgainstType(ply, DamageType.PHYSICAL);
+        float proj = DamageSystem.getTotalArmorAgainstType(ply, DamageType.PROJECTILE);
+        float expl = DamageSystem.getTotalArmorAgainstType(ply, DamageType.EXPLOSION);
+        float energy = DamageSystem.getTotalArmorAgainstType(ply, DamageType.ENERGY);
+        float fire = DamageSystem.getTotalArmorAgainstType(ply, DamageType.FIRE);
+        float ice = DamageSystem.getTotalArmorAgainstType(ply, DamageType.ICE);
+        float lightning = DamageSystem.getTotalArmorAgainstType(ply, DamageType.LIGHTNING);
+        float dark = DamageSystem.getTotalArmorAgainstType(ply, DamageType.DARK);
+        float poison = DamageSystem.getTotalArmorAgainstType(ply, DamageType.POISON);
+        float rad = DamageSystem.getTotalArmorAgainstType(ply, DamageType.RADIATION);
 
-        tooltip.add(ChatFormatting.DARK_AQUA + trans("TGDamageType.ENERGY") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.ENERGY)));
-
-        tooltip.add(ChatFormatting.RED + trans("TGDamageType.FIRE") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.FIRE)));
-        tooltip.add(ChatFormatting.AQUA + trans("TGDamageType.ICE") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.ICE)));
-        tooltip.add(ChatFormatting.YELLOW + trans("TGDamageType.LIGHTNING") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.LIGHTNING)));
-
-        tooltip.add(ChatFormatting.DARK_GRAY + trans("TGDamageType.DARK") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.DARK)));
-
-
-        tooltip.add(ChatFormatting.DARK_GREEN + trans("TGDamageType.POISON") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.POISON)));
-
-        tooltip.add(ChatFormatting.GREEN + trans("TGDamageType.RADIATION") + ": " + GenericArmor.formatAV(DamageSystem.getTotalArmorAgainstType(ply, DamageType.RADIATION)));
+        tooltip.add(ChatFormatting.DARK_GRAY + trans("TGDamageType.PHYSICAL") + ": " + GenericArmor.formatAV(phys) + " (" + GenericArmor.formatPercent(phys) + ")");
+        tooltip.add(ChatFormatting.GRAY + trans("TGDamageType.PROJECTILE") + ": " + GenericArmor.formatAV(proj) + " (" + GenericArmor.formatPercent(proj) + ")");
+        tooltip.add(ChatFormatting.DARK_RED + trans("TGDamageType.EXPLOSION") + ": " + GenericArmor.formatAV(expl) + " (" + GenericArmor.formatPercent(expl) + ")");
+        tooltip.add(ChatFormatting.DARK_AQUA + trans("TGDamageType.ENERGY") + ": " + GenericArmor.formatAV(energy) + " (" + GenericArmor.formatPercent(energy) + ")");
+        tooltip.add(ChatFormatting.RED + trans("TGDamageType.FIRE") + ": " + GenericArmor.formatAV(fire) + " (" + GenericArmor.formatPercent(fire) + ")");
+        tooltip.add(ChatFormatting.AQUA + trans("TGDamageType.ICE") + ": " + GenericArmor.formatAV(ice) + " (" + GenericArmor.formatPercent(ice) + ")");
+        tooltip.add(ChatFormatting.YELLOW + trans("TGDamageType.LIGHTNING") + ": " + GenericArmor.formatAV(lightning) + " (" + GenericArmor.formatPercent(lightning) + ")");
+        tooltip.add(ChatFormatting.DARK_GRAY + trans("TGDamageType.DARK") + ": " + GenericArmor.formatAV(dark) + " (" + GenericArmor.formatPercent(dark) + ")");
+        tooltip.add(ChatFormatting.DARK_GREEN + trans("TGDamageType.POISON") + ": " + GenericArmor.formatAV(poison) + " (" + GenericArmor.formatPercent(poison) + ")");
+        tooltip.add(ChatFormatting.GREEN + trans("TGDamageType.RADIATION") + ": " + GenericArmor.formatAV(rad) + " (" + GenericArmor.formatPercent(rad) + ")");
 
 
         return tooltip;

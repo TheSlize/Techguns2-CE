@@ -92,6 +92,7 @@ import techguns.events.TGGuiEvents;
 import techguns.events.TechgunsGuiHandler.GuiHandlerRegister;
 import techguns.gui.*;
 import techguns.gui.containers.*;
+import techguns.gui.player.tabs.TGCreativeInventoryTab;
 import techguns.gui.player.tabs.TGPlayerTab;
 import techguns.items.guns.GenericGun;
 import techguns.keybind.TGKeybinds;
@@ -601,6 +602,8 @@ public class ClientProxy extends CommonProxy {
             TabRegistry.registerTab(new InventoryTabVanilla());
         }
         TabRegistry.registerTab(new TGPlayerTab());
+
+        MinecraftForge.EVENT_BUS.register(new TGCreativeInventoryTab());
     }
 
     protected void initGuiHandler() {

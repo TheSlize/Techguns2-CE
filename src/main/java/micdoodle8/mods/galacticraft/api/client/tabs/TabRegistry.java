@@ -3,6 +3,7 @@ package micdoodle8.mods.galacticraft.api.client.tabs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.network.play.client.CPacketCloseWindow;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import techguns.gui.player.tabs.TGCreativeInventoryTab;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +87,12 @@ public class TabRegistry
 	public static void openInventoryGui()
 	{
 		TabRegistry.mc.player.connection.sendPacket(new CPacketCloseWindow(mc.player.openContainer.windowId));
+		TGCreativeInventoryTab.swallowNextMouseRelease();
+		if (TabRegistry.mc.playerController != null && TabRegistry.mc.playerController.isInCreativeMode())
+		{
+			TabRegistry.mc.displayGuiScreen(new GuiContainerCreative(TabRegistry.mc.player));
+			return;
+		}
 		GuiInventory inventory = new GuiInventory(TabRegistry.mc.player);
 		TabRegistry.mc.displayGuiScreen(inventory);
 	}

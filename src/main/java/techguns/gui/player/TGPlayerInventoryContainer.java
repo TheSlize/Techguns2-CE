@@ -46,7 +46,7 @@ public class TGPlayerInventoryContainer extends Container {
         this.addSlotToContainer(new SlotFood(tgplayerinv, TGPlayerInventory.SLOTS_AUTOFOOD_START + 1, 116 + 18, 24));
         this.addSlotToContainer(new SlotFood(tgplayerinv, TGPlayerInventory.SLOTS_AUTOFOOD_START + 2, 116 + 18 * 2, 24));
 
-        this.addSlotToContainer(new SlotTG(tgplayerinv, TGPlayerInventory.SLOT_AUTOHEAL, 97, 24, TGSlotType.HEALSLOT));
+        this.addSlotToContainer(new SlotTG(tgplayerinv, TGPlayerInventory.SLOT_AUTOHEAL, 98, 24, TGSlotType.HEALSLOT));
 
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 4; j++) {

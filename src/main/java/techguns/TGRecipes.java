@@ -21,17 +21,29 @@ public class TGRecipes implements ITGInitializer {
         for (TGMetalPanelType type : TGMetalPanelType.values()) {
             int meta = type.ordinal();
             String typeName = type.getName();
+            if (meta < 8) {
+                addShaped(typeName + "_slab", new ItemStack(TGBlocks.METAL_SLAB, 6, meta),
+                        "XXX",
+                        'X', new ItemStack(TGBlocks.METAL_PANEL, 1, meta)
+                );
 
-            addShaped(typeName + "_slab", new ItemStack(TGBlocks.METAL_SLAB, 6, meta),
-                    "XXX",
-                    'X', new ItemStack(TGBlocks.METAL_PANEL, 1, meta)
-            );
+                addShaped(typeName + "_fence", new ItemStack(TGBlocks.METAL_FENCE, 6, meta),
+                        "XXX",
+                        "XXX",
+                        'X', new ItemStack(TGBlocks.METAL_PANEL, 1, meta)
+                );
+            } else {
+                addShaped(typeName + "_slab", new ItemStack(TGBlocks.METAL_SLAB_ALT, 6, meta - 8),
+                        "XXX",
+                        'X', new ItemStack(TGBlocks.METAL_PANEL, 1, meta)
+                );
 
-            addShaped(typeName + "_fence", new ItemStack(TGBlocks.METAL_FENCE, 6, meta),
-                    "XXX",
-                    "XXX",
-                    'X', new ItemStack(TGBlocks.METAL_PANEL, 1, meta)
-            );
+                addShaped(typeName + "_fence", new ItemStack(TGBlocks.METAL_FENCE_ALT, 6, meta - 8),
+                        "XXX",
+                        "XXX",
+                        'X', new ItemStack(TGBlocks.METAL_PANEL, 1, meta)
+                );
+            }
         }
 
         for (EnumConcreteType type : EnumConcreteType.values()) {
@@ -103,6 +115,8 @@ public class TGRecipes implements ITGInitializer {
         addStair(TGBlocks.METAL_STAIRS_ALT1, 15, TGBlocks.METAL_PANEL, TGMetalPanelType.CONTAINER_ORANGE.ordinal(), "metal_stairs_alt1_1");
         addStair(TGBlocks.METAL_STAIRS_ALT2, 7, TGBlocks.METAL_PANEL, TGMetalPanelType.STEELFRAME_BLUE.ordinal(), "metal_stairs_alt2_0");
         addStair(TGBlocks.METAL_STAIRS_ALT2, 15, TGBlocks.METAL_PANEL, TGMetalPanelType.STEELFRAME_SCAFFOLD.ordinal(), "metal_stairs_alt2_1");
+        addStair(TGBlocks.METAL_STAIRS_ALT3, 7, TGBlocks.METAL_PANEL, TGMetalPanelType.CONTAINER_SCIFI.ordinal(), "metal_stairs_alt3_0");
+        addStair(TGBlocks.METAL_STAIRS_ALT3, 15, TGBlocks.METAL_PANEL, TGMetalPanelType.CONTAINER_SCIFI_RUSTY.ordinal(), "metal_stairs_alt3_1");
         addStair(TGBlocks.CONCRETE_STAIRS, 7, TGBlocks.CONCRETE, EnumConcreteType.CONCRETE_GREY_DARK.ordinal(), "concrete_stairs_0");
         addStair(TGBlocks.CONCRETE_STAIRS, 15, TGBlocks.CONCRETE, EnumConcreteType.CONCRETE_BROWN_LIGHT.ordinal(), "concrete_stairs_1");
         addStair(TGBlocks.CONCRETE_STAIRS_ALT, 7, TGBlocks.CONCRETE, EnumConcreteType.CONCRETE_BROWN.ordinal(), "concrete_stairs_alt_0");

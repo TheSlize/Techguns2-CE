@@ -322,18 +322,31 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor, IItemTGRen
         return formatArmor.format(armorValue);
     }
 
+    public static String formatPercent(float armorValue) {
+        return formatArmor.format(armorValue / 25 * 100) + "%";
+    }
+
     protected void addArmorvaluesInformation(List<String> list) {
 
         EntityEquipmentSlot slot = this.armorType;
 
-        list.add(ChatFormatting.DARK_GRAY + TextUtil.trans("techguns.armorTooltip.damageType.AR") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.PHYSICAL)));
-        list.add(ChatFormatting.GRAY + TextUtil.trans("techguns.armorTooltip.damageType.PR") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.PROJECTILE)));
-        list.add(ChatFormatting.DARK_RED + TextUtil.trans("techguns.armorTooltip.damageType.EX") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.EXPLOSION)));
-        list.add(ChatFormatting.DARK_AQUA + TextUtil.trans("techguns.armorTooltip.damageType.E") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.ENERGY)));
-        list.add(ChatFormatting.RED + TextUtil.trans("techguns.armorTooltip.damageType.F") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.FIRE)));
-        list.add(ChatFormatting.YELLOW + TextUtil.trans("techguns.armorTooltip.damageType.L") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.LIGHTNING)));
-        list.add(ChatFormatting.DARK_GREEN + TextUtil.trans("techguns.armorTooltip.damageType.P") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.POISON)));
-        list.add(ChatFormatting.GREEN + TextUtil.trans("techguns.armorTooltip.damageType.RAD") + " " + formatAV(this.material.getArmorValueSlot(slot, DamageType.RADIATION)));
+        float phys = this.material.getArmorValueSlot(slot, DamageType.PHYSICAL);
+        float proj = this.material.getArmorValueSlot(slot, DamageType.PROJECTILE);
+        float expl = this.material.getArmorValueSlot(slot, DamageType.EXPLOSION);
+        float energy = this.material.getArmorValueSlot(slot, DamageType.ENERGY);
+        float fire = this.material.getArmorValueSlot(slot, DamageType.FIRE);
+        float lightning = this.material.getArmorValueSlot(slot, DamageType.LIGHTNING);
+        float poison = this.material.getArmorValueSlot(slot, DamageType.POISON);
+        float rad = this.material.getArmorValueSlot(slot, DamageType.RADIATION);
+
+        list.add(ChatFormatting.DARK_GRAY + TextUtil.trans("techguns.armorTooltip.damageType.AR") + " " + formatAV(phys) + " (" + formatPercent(phys) + ")");
+        list.add(ChatFormatting.GRAY + TextUtil.trans("techguns.armorTooltip.damageType.PR") + " " + formatAV(proj) + " (" + formatPercent(proj) + ")");
+        list.add(ChatFormatting.DARK_RED + TextUtil.trans("techguns.armorTooltip.damageType.EX") + " " + formatAV(expl) + " (" + formatPercent(expl) + ")");
+        list.add(ChatFormatting.DARK_AQUA + TextUtil.trans("techguns.armorTooltip.damageType.E") + " " + formatAV(energy) + " (" + formatPercent(energy) + ")");
+        list.add(ChatFormatting.RED + TextUtil.trans("techguns.armorTooltip.damageType.F") + " " + formatAV(fire) + " (" + formatPercent(fire) + ")");
+        list.add(ChatFormatting.YELLOW + TextUtil.trans("techguns.armorTooltip.damageType.L") + " " + formatAV(lightning) + " (" + formatPercent(lightning) + ")");
+        list.add(ChatFormatting.DARK_GREEN + TextUtil.trans("techguns.armorTooltip.damageType.P") + " " + formatAV(poison) + " (" + formatPercent(poison) + ")");
+        list.add(ChatFormatting.GREEN + TextUtil.trans("techguns.armorTooltip.damageType.RAD") + " " + formatAV(rad) + " (" + formatPercent(rad) + ")");
     }
 
     @Override

@@ -61,6 +61,7 @@ public class TGBlocks implements ITGInitializer{
 	public static BlockTGStairs METAL_STAIRS_ALT;
 	public static BlockTGStairs METAL_STAIRS_ALT1;
 	public static BlockTGStairs METAL_STAIRS_ALT2;
+	public static BlockTGStairs METAL_STAIRS_ALT3;
 	public static BlockTGStairs CONCRETE_STAIRS;
 	public static BlockTGStairs CONCRETE_STAIRS_ALT;
 	public static BlockTGStairs CONCRETE_STAIRS_ALT1;
@@ -71,6 +72,9 @@ public class TGBlocks implements ITGInitializer{
 
 	public static BlockTGSlab METAL_SLAB;
 	public static BlockTGDoubleSlab METAL_DOUBLE_SLAB;
+
+	public static BlockTGSlab METAL_SLAB_ALT;
+	public static BlockTGDoubleSlab METAL_DOUBLE_SLAB_ALT;
 
 	public static BlockTGSlab CONCRETE_SLAB;
 	public static BlockTGDoubleSlab CONCRETE_DOUBLE_SLAB;
@@ -85,6 +89,7 @@ public class TGBlocks implements ITGInitializer{
 	public static BlockTGDoubleSlab NETHER_METAL_DOUBLE_SLAB_ALT;
 
 	public static BlockTGFence METAL_FENCE;
+	public static BlockTGFence METAL_FENCE_ALT;
 	public static BlockTGFence CONCRETE_FENCE;
 	public static BlockTGFence NETHER_METAL_FENCE;
 
@@ -161,6 +166,7 @@ public class TGBlocks implements ITGInitializer{
 		METAL_STAIRS_ALT = (BlockTGStairs) new BlockTGStairs("stairs_metal_alt", Material.IRON, SoundType.METAL).setTextures("container_red", "container_green").setHardness(8.0f);
 		METAL_STAIRS_ALT1 = (BlockTGStairs) new BlockTGStairs("stairs_metal_alt1", Material.IRON, SoundType.METAL).setTextures("container_blue", "container_orange").setHardness(8.0f);
 		METAL_STAIRS_ALT2 = (BlockTGStairs) new BlockTGStairs("stairs_metal_alt2", Material.IRON, SoundType.METAL).setTextures("steelframe_blue", "steelframe_scaffold").setHardness(8.0f);
+		METAL_STAIRS_ALT3 = (BlockTGStairs) new BlockTGStairs("stairs_metal_alt3", Material.IRON, SoundType.METAL).setTextures("container_scifi", "container_scifi_rusty").setHardness(8.0f);
 		CONCRETE_STAIRS = (BlockTGStairs) new BlockTGStairs("stairs_concrete", Material.ROCK, SoundType.STONE).setTextures("concrete_grey_dark", "concrete_brown_light").setHardness(6.0f);
 		CONCRETE_STAIRS_ALT = (BlockTGStairs) new BlockTGStairs("stairs_concrete_alt", Material.ROCK, SoundType.STONE).setTextures("concrete_brown", "concrete_grey").setHardness(6.0f);
 		CONCRETE_STAIRS_ALT1 = (BlockTGStairs) new BlockTGStairs("stairs_concrete_alt1", Material.ROCK, SoundType.STONE).setTextures("concrete_brown_light_scaff").setHardness(6.0f);
@@ -175,13 +181,17 @@ public class TGBlocks implements ITGInitializer{
 		METAL_DOUBLE_SLAB = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_metal", Material.IRON, SoundType.METAL, METAL_SLAB).setHardness(8.0f);
 		METAL_SLAB.setDoubleSlab(METAL_DOUBLE_SLAB);
 
+		METAL_SLAB_ALT = (BlockTGSlab) new BlockTGSlab("slab_metal_alt", Material.IRON, SoundType.METAL).setTextures("container_scifi", "container_scifi_rusty").setHardness(8.0f);
+		METAL_DOUBLE_SLAB_ALT = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_metal_alt", Material.IRON, SoundType.METAL, METAL_SLAB_ALT).setHardness(8.0f);
+		METAL_SLAB_ALT.setDoubleSlab(METAL_DOUBLE_SLAB_ALT);
+
 		CONCRETE_SLAB = (BlockTGSlab) new BlockTGSlab("slab_concrete", Material.ROCK, SoundType.STONE).setTextures("concrete_brown", "concrete_brown_light", "concrete_grey", "concrete_grey_dark", "concrete_brown_pipes", "concrete_brown_light_scaff").setSideTexture(4, "concrete_brown").setHardness(8.0f);
 		CONCRETE_DOUBLE_SLAB = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_concrete", Material.ROCK, SoundType.STONE, CONCRETE_SLAB).setHardness(8.0f);
 		CONCRETE_SLAB.setDoubleSlab(CONCRETE_DOUBLE_SLAB);
 
 		CONCRETE_SLAB_ALT = (BlockTGSlab) new BlockTGSlab("slab_concrete_alt", Material.ROCK, SoundType.STONE).setTextures("concrete_brown_light_pipes", "concrete_grey_pipes", "concrete_grey_dark_pipes").setSideTexture(0, "concrete_brown_light")
 				.setSideTexture(1, "concrete_grey").setSideTexture(2, "concrete_grey_dark").setHardness(8.0f);
-		CONCRETE_DOUBLE_SLAB_ALT = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_concrete_alt", Material.ROCK, SoundType.STONE, CONCRETE_SLAB).setHardness(8.0f);
+		CONCRETE_DOUBLE_SLAB_ALT = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_concrete_alt", Material.ROCK, SoundType.STONE, CONCRETE_SLAB_ALT).setHardness(8.0f);
 		CONCRETE_SLAB_ALT.setDoubleSlab(CONCRETE_DOUBLE_SLAB_ALT);
 
 		NETHER_METAL_SLAB = (BlockTGSlab) new BlockTGSlab("slab_nethermetal", Material.ROCK, SoundType.STONE).setTextures("nethermetal_panel", "nethermetal_grate1", "nethermetal_grate2", "nethermetal_grey_dark", "nethermetal_grey",
@@ -195,6 +205,7 @@ public class TGBlocks implements ITGInitializer{
 
 		METAL_FENCE = (BlockTGFence) new BlockTGFence("fence_metal", Material.IRON, SoundType.METAL).setTextures("container_red", "container_green",
 				"container_blue", "container_orange", "panel_large_border", "steelframe_blue", "steelframe_dark", "steelframe_scaffold").setHardness(8.0f);
+		METAL_FENCE_ALT = (BlockTGFence) new BlockTGFence("fence_metal_alt", Material.IRON, SoundType.METAL).setTextures("container_scifi", "container_scifi_rusty").setHardness(8.0f);
 		CONCRETE_FENCE = (BlockTGFence) new BlockTGFence("fence_concrete", Material.IRON, SoundType.METAL).setTextures("concrete_brown", "concrete_brown_light", "concrete_grey", "concrete_grey_dark", "concrete_brown_light_scaff").setHardness(8.0f);
 		NETHER_METAL_FENCE = (BlockTGFence) new BlockTGFence("fence_nethermetal", Material.IRON, SoundType.METAL).setTextures("nethermetal_panel", "nethermetal_grate1", "nethermetal_grate2", "nethermetal_grey_dark", "nethermetal_grey",
 				"nethermetal_grey_tiles", "nethermetal_plate_black", "nethermetal_plate_red").setHardness(8.0f);

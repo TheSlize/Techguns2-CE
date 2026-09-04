@@ -11,7 +11,9 @@ public enum TGMetalPanelType implements IStringSerializable{
 	PANEL_LARGE_BORDER,
 	STEELFRAME_BLUE,
 	STEELFRAME_DARK,
-	STEELFRAME_SCAFFOLD;
+	STEELFRAME_SCAFFOLD,
+	CONTAINER_SCIFI,
+	CONTAINER_SCIFI_RUSTY;
 
 	@Override
 	public @NotNull String getName() {
