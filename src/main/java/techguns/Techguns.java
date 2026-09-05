@@ -29,7 +29,7 @@ public class Techguns {
     public static final String MCVERSION = "1.12.2";
 
     public static final Logger logger = LogManager.getLogger(Tags.MOD_ID);
-    public static final String UPDATEURL = "https://raw.githubusercontent.com/pWn3d1337/Techguns2/master/update.json";
+    public static final String UPDATEURL = "https://raw.githubusercontent.com/TheSlize/Techguns2-CE/master/update.json";
     public static final String FORGE_BUILD = "14.23.5.2847";
     public static final String DEPENDENCIES = "required:forge@[" + FORGE_BUILD + ",);after:ftblib;after:chisel;after:configanytime;after:hats;after:betterhurttimer";
 
