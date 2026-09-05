@@ -82,4 +82,5 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:the-lost-cities-269024:2861574")
     compileOnly rfg.deobf("curse.maven:ftb-library-legacy-forge-237167:2985811")
     compileOnly rfg.deobf("curse.maven:albedo-275300:2714505")
+    compileOnly rfg.deobf("curse.maven:hats-229073:2960397")
 }

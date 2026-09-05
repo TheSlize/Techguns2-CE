@@ -15,8 +15,10 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import techguns.init.ITGInitializer;
 import techguns.items.guns.ammo.AmmoTypes;
+import techguns.plugins.bht.TGBetterHurtTimerPlugin;
 import techguns.plugins.chisel.TGChiselBlocks;
 import techguns.plugins.crafttweaker.TGCraftTweakerIntegration;
+import techguns.plugins.hats.TGHatsPlugin;
 import techguns.server.CommandSetSpawner;
 import techguns.world.OreGenerator;
 import techguns.world.WorldGenTGStructureSpawn;
@@ -29,7 +31,7 @@ public class Techguns {
     public static final Logger logger = LogManager.getLogger(Tags.MOD_ID);
     public static final String UPDATEURL = "https://raw.githubusercontent.com/pWn3d1337/Techguns2/master/update.json";
     public static final String FORGE_BUILD = "14.23.5.2847";
-    public static final String DEPENDENCIES = "required:forge@[" + FORGE_BUILD + ",);after:ftblib;after:chisel;after:configanytime";
+    public static final String DEPENDENCIES = "required:forge@[" + FORGE_BUILD + ",);after:ftblib;after:chisel;after:configanytime;after:hats;after:betterhurttimer";
 
     @Mod.Instance
     public static Techguns instance;
@@ -103,6 +105,12 @@ public class Techguns {
         }
         if (Loader.isModLoaded("chisel")) {
             CHISEL_ENABLED = true;
+        }
+        if (Loader.isModLoaded("hats")) {
+            TGHatsPlugin.init();
+        }
+        if (Loader.isModLoaded("betterhurttimer")) {
+            TGBetterHurtTimerPlugin.init();
         }
 
         for (ITGInitializer init : initializers) {
