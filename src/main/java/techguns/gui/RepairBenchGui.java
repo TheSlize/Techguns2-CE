@@ -35,11 +35,8 @@ public class RepairBenchGui extends OwnedTileEntGui {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-        int x = 0;
-        int y = 0;
         int mx = mouseX - (this.width - this.xSize) / 2;
         int my = mouseY - (this.height - this.ySize) / 2;
-        int color = 4210752; //0xff101010;
 
         for (int i = 0; i < 4; i++) {
             if (isInRect(mx, my, 90 + i * 20, 39, 14, 14)) {
@@ -69,12 +66,12 @@ public class RepairBenchGui extends OwnedTileEntGui {
 
                     List<ItemStack> mats = ((GenericArmor) item.getItem()).getRepairMats(item);
 
-                    List<String> tooltips = new ArrayList<String>();
+                    List<String> tooltips = new ArrayList<>();
                     tooltips.add(TextUtil.trans("techguns.repairBench.requiredMats"));
                     for (int i = 1; i < mats.size() + 1; i++) {
                         String prefix = "";
                         if (InventoryUtil.canConsumeItem(this.tileent.getInventory(), mats.get(i - 1), 0, this.tileent.getInventory().getSlots()) > 0) {
-                            prefix = "\u00A7c";
+                            prefix = "§c";
                         }
                         tooltips.add(prefix + mats.get(i - 1).getCount() + "x " + TextUtil.trans(mats.get(i - 1).getTranslationKey() + ".name"));
                     }
@@ -91,12 +88,12 @@ public class RepairBenchGui extends OwnedTileEntGui {
 
                     List<ItemStack> mats = ((GenericShield) item.getItem()).getRepairMats(item);
 
-                    List<String> tooltips = new ArrayList<String>();
+                    List<String> tooltips = new ArrayList<>();
                     tooltips.add(TextUtil.trans("techguns.repairBench.requiredMats"));
                     for (int i = 1; i < mats.size() + 1; i++) {
                         String prefix = "";
                         if (InventoryUtil.canConsumeItem(this.tileent.getInventory(), mats.get(i - 1), 0, this.tileent.getInventory().getSlots()) > 0) {
-                            prefix = "\u00A7c";
+                            prefix = "§c";
                         }
                         tooltips.add(prefix + mats.get(i - 1).getCount() + "x " + TextUtil.trans(mats.get(i - 1).getTranslationKey() + ".name"));
                     }

@@ -55,18 +55,8 @@ public class UpgradeBenchGui extends OwnedTileEntGui {
 
         int color = (this.mc.player.capabilities.isCreativeMode || xp <= this.mc.player.experienceTotal) ? 8453920 : 16736352; //same colors as anvil.
 
-        this.drawXPText(TextUtil.transTG("gui.xp") + ": " + this.mc.player.experienceTotal, 95, 17, 8453920);
-        this.drawXPText(s, 95, 17 + 10, color);
+        this.fontRenderer.drawStringWithShadow(TextUtil.transTG("gui.xp") + ": " + this.mc.player.experienceTotal, 95, 17, 8453920);
+        this.fontRenderer.drawStringWithShadow(s, 95, 17 + 10, color);
 
-    }
-
-    protected void drawXPText(String s, int x, int y, int color) {
-        int j = -16777216 | (color & 16579836) >> 2 | color & -16777216;
-
-        this.fontRenderer.drawString(s, x, y + 1, j);
-        this.fontRenderer.drawString(s, x + 1, y, j);
-        this.fontRenderer.drawString(s, x + 1, y + 1, j);
-
-        this.fontRenderer.drawString(s, x, y, color);
     }
 }

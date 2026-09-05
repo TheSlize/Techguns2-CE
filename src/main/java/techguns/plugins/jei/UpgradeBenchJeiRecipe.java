@@ -11,10 +11,8 @@ import java.util.List;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.IStackHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import techguns.tileentities.operation.UpgradeBenchRecipes;
 import techguns.TGConfig;
-import techguns.tileentities.operation.IMachineRecipe;
 
 public class UpgradeBenchJeiRecipe extends BasicRecipeWrapper {
     protected UpgradeBenchRecipe recipe;
@@ -29,9 +27,7 @@ public class UpgradeBenchJeiRecipe extends BasicRecipeWrapper {
 
         List<UpgradeBenchJeiRecipe> recipes = new ArrayList<>();
 
-        UpgradeBenchRecipes.recipes.forEach(r -> {
-            recipes.add(new UpgradeBenchJeiRecipe(r));
-        });
+        UpgradeBenchRecipes.recipes.forEach(r -> recipes.add(new UpgradeBenchJeiRecipe(r)));
 
         return recipes;
     }
@@ -48,20 +44,8 @@ public class UpgradeBenchJeiRecipe extends BasicRecipeWrapper {
 
     @Override
     public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-
         int xp = this.recipe.getLevel() * TGConfig.misc.upgrade_xp_cost;
-        drawXPText(minecraft.fontRenderer, TextUtil.transTG("gui.xpcost") + ": " + xp, 95 + BasicRecipeCategory.JEI_OFFSET_X, 17 + BasicRecipeCategory.JEI_OFFSET_Y, 8453920);
-
-    }
-
-    protected void drawXPText(FontRenderer fontRenderer, String s, int x, int y, int color) {
-        int j = -16777216 | (color & 16579836) >> 2 | color & -16777216;
-
-        fontRenderer.drawString(s, x, y + 1, j);
-        fontRenderer.drawString(s, x + 1, y, j);
-        fontRenderer.drawString(s, x + 1, y + 1, j);
-
-        fontRenderer.drawString(s, x, y, color);
+        minecraft.fontRenderer.drawStringWithShadow(TextUtil.transTG("gui.xpcost") + ": " + xp, 95 + BasicRecipeCategory.JEI_OFFSET_X, 17 + BasicRecipeCategory.JEI_OFFSET_Y, 8453920);
     }
 
 }

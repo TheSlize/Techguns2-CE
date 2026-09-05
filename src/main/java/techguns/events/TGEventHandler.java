@@ -19,10 +19,13 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -34,6 +37,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
@@ -98,9 +102,12 @@ import techguns.util.BlockUtils;
 import techguns.util.InventoryUtil;
 import techguns.util.TextUtil;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
 public class TGEventHandler {
@@ -800,5 +807,103 @@ public class TGEventHandler {
         if (event.getEntity() instanceof EntityLivingBase elb) {
             elb.getAttributeMap().registerAttribute(TGRadiation.RADIATION_RESISTANCE).setBaseValue(0);
         }
+    }
+
+    @SubscribeEvent
+    public static void onAnvilUpdate(AnvilUpdateEvent event) {
+        ItemStack left = event.getLeft();
+        ItemStack right = event.getRight();
+
+        if (left.isEmpty() || !(left.getItem() instanceof GenericArmor) || right.isEmpty()) return;
+
+        Map<Enchantment, Integer> added = EnchantmentHelper.getEnchantments(right);
+        if (added.isEmpty()) return;
+
+        boolean isBook = right.getItem() == Items.ENCHANTED_BOOK;
+        if (!isBook && right.getItem() != left.getItem()) return;
+
+        ItemStack output = left.copy();
+        int repairCost = 0;
+
+        if (!isBook && output.isItemStackDamageable()) {
+            int leftDurability = left.getMaxDamage() - left.getItemDamage();
+            int rightDurability = right.getMaxDamage() - right.getItemDamage();
+            int repaired = rightDurability + output.getMaxDamage() * 12 / 100;
+            int newDamage = Math.max(0, output.getMaxDamage() - (leftDurability + repaired));
+            if (newDamage < output.getItemDamage()) {
+                output.setItemDamage(newDamage);
+                repairCost += 2;
+            }
+        }
+
+        Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(output);
+        int enchantCost = 0;
+        boolean anyApplicable = false;
+        boolean anyRejected = false;
+
+        for (Map.Entry<Enchantment, Integer> entry : added.entrySet()) {
+            Enchantment ench = entry.getKey();
+            if (ench == null) continue;
+
+            int oldLevel = enchants.getOrDefault(ench, 0);
+            int newLevel = entry.getValue();
+            newLevel = (oldLevel == newLevel) ? newLevel + 1 : Math.max(newLevel, oldLevel);
+
+            boolean applicable = ench.canApply(left);
+            for (Enchantment present : enchants.keySet()) {
+                if (present != null && present != ench && !ench.isCompatibleWith(present)) {
+                    applicable = false;
+                    enchantCost++;
+                }
+            }
+
+            if (!applicable) {
+                anyRejected = true;
+            } else {
+                anyApplicable = true;
+                if (newLevel > ench.getMaxLevel()) {
+                    newLevel = ench.getMaxLevel();
+                }
+                enchants.put(ench, newLevel);
+
+                int rarityCost = switch (ench.getRarity()) {
+                    case COMMON -> 1;
+                    case UNCOMMON -> 2;
+                    case RARE -> 4;
+                    case VERY_RARE -> 8;
+                };
+
+                if (isBook) {
+                    rarityCost = Math.max(1, rarityCost / 2);
+                }
+
+                enchantCost += rarityCost * newLevel;
+            }
+        }
+
+        if (anyRejected && !anyApplicable) return;
+
+        int renameCost = 0;
+        String name = event.getName();
+        if (StringUtils.isBlank(name)) {
+            if (left.hasDisplayName()) {
+                renameCost = 1;
+                output.clearCustomName();
+            }
+        } else if (!name.equals(left.getDisplayName())) {
+            renameCost = 1;
+            output.setStackDisplayName(name);
+        }
+
+        int prior = left.getRepairCost() + right.getRepairCost();
+        int totalCost = prior + repairCost + (enchantCost * 3) + renameCost;
+
+        int nextRepairCost = Math.max(left.getRepairCost(), right.getRepairCost()) * 2 + 1;
+        output.setRepairCost(nextRepairCost);
+        EnchantmentHelper.setEnchantments(enchants, output);
+
+        event.setOutput(output);
+        event.setCost(totalCost);
+        event.setMaterialCost(0);
     }
 }

@@ -55,9 +55,13 @@ public class UpgradeBenchRecipes {
         }
 
         public boolean isValidItemInput(ItemStack item) {
-            if (!item.isEmpty() && item.getItem() instanceof GenericArmor) {
-                //return ench.type!=null && ench.type.canEnchantItem(item.getItem());
-                return ench.canApply(item);
+            if (!item.isEmpty() && item.getItem() instanceof GenericArmor && ench.canApply(item)) {
+                for (Enchantment present : EnchantmentHelper.getEnchantments(item).keySet()) {
+                    if (present != null && present != ench && !ench.isCompatibleWith(present)) {
+                        return false;
+                    }
+                }
+                return true;
             }
             return false;
         }
