@@ -103,11 +103,10 @@ public class GenericProjectile extends Entity implements IProjectile, IEntityAdd
 								float speed, int TTL, float spread, float dmgDropStart, float dmgDropEnd, float dmgMin, float penetration,
 								boolean blockdamage, EnumBulletFirePos firePos) {
 
-		float offsetSide=0.16F;
-		float Xzoom = offsetSide*0.2f;//-0.35f, 0.1f, 0.05f); //xyz
-		float Zzoom = offsetSide*0.02f;
-		float offsetHeight=0f;
-		if(this.shooter!=null && shooter instanceof INPCTechgunsShooter) {
+		float offsetSide = 0.16F;
+		float offsetZoom = offsetSide * 0.2f;
+		float offsetHeight = 0f;
+		if (this.shooter != null && shooter instanceof INPCTechgunsShooter) {
 			INPCTechgunsShooter tgshooter = (INPCTechgunsShooter) this.shooter;
 			offsetSide += tgshooter.getBulletOffsetSide();
 			offsetHeight += tgshooter.getBulletOffsetHeight();
@@ -125,10 +124,8 @@ public class GenericProjectile extends Entity implements IProjectile, IEntityAdd
 			//this.posY -= 0.10000000149011612D;
 			this.posZ += MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * offsetSide;
 		} else if (firePos==EnumBulletFirePos.ZOOMED) {
-			this.posX -= MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * Xzoom;
-			//this.posY -= 0.10000000149011612D;
-			this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * Zzoom;
-			//offsetHeight -= Yzoom;
+			this.posX -= MathHelper.cos(this.rotationYaw / 180.0F * (float) Math.PI) * offsetZoom;
+			this.posZ -= MathHelper.sin(this.rotationYaw / 180.0F * (float) Math.PI) * offsetZoom;
 		}
 
 		this.posY += (-0.10000000149011612D+offsetHeight);

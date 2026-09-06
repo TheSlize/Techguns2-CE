@@ -471,7 +471,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
     @Override
     public boolean isZooming() {
-        return ClientProxy.get().player_zoom == this.zoomMult;
+        return this.canZoom && ClientProxy.get().player_zoom == this.zoomMult;
     }
 
     @Override
@@ -516,7 +516,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                         firePos = EnumBulletFirePos.LEFT;
                     }
 
-                    if (zooming) {
+                    if (zooming && this.canZoom) {
                         accuracybonus *= this.zoombonus;
                         if (fireCenteredZoomed) {
                             firePos = EnumBulletFirePos.CENTER;
