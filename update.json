@@ -1,10 +1,10 @@
 {
   "homepage": "https://modrinth.com/mod/techguns",
   "1.12.2": {
-    "2.2.0.0": "Latest Techguns-CE release"
+    "2.2.0.1": "Latest Techguns-CE release"
   },
   "promos": {
-    "1.12.2-latest": "2.2.0.0",
-    "1.12.2-recommended": "2.2.0.0"
+    "1.12.2-latest": "2.2.0.1",
+    "1.12.2-recommended": "2.2.0.1"
   }
 }
